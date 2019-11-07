@@ -889,6 +889,11 @@ public class JFrameBanco extends javax.swing.JFrame {
     }
     
     public void generarReporte() throws IOException{
+        fileCu = new File("Cuentas.obj");
+        rafCu = new RandomAccessFile(fileCu, "r");
+        
+        rafCu.seek(0);
+        
         Date dInicio = jDateFechaInicio.getDate();
         Date dFinal = jDateFechaFin.getDate();
         
@@ -899,7 +904,7 @@ public class JFrameBanco extends javax.swing.JFrame {
         
         String fechaStringInicio = formatoFecha.format(dInicio);
         String fechaStringFinal = formatoFecha.format(dFinal);
-        String paraDocumento = fechaStringInicio + "-" + fechaStringFinal + ".pdf";
+        //String paraDocumento = fechaStringInicio + "-" + fechaStringFinal + ".pdf";
         
         Document documento = new Document(PageSize.A4);
         documento.addAuthor("Banco el cerdin");
@@ -907,10 +912,28 @@ public class JFrameBanco extends javax.swing.JFrame {
         
         try {
             PdfWriter.getInstance(documento, new FileOutputStream("reportes.pdf"));
+            documento.open();
+                    
+            for(int i =0; i<rafCu.length(); i++){
+                String cuentaIdCliente = rafCu.readUTF();
+                String cuentaClabe = rafCu.readUTF();
+                String cuentaTipo = rafCu.readUTF();
+                String cuentaMonto = rafCu.readUTF();
+                String fechaDocumento = rafCu.readUTF();
+                String revisarDia = fechaDocumento.substring(0,2);
+                String revisarMes = fechaDocumento.substring(3,5);
+                String revisarAnio = fechaDocumento.substring(6,10);
+                
+                if(Integer.parseInt(fechaStringInicio.substring(6, 10)) < Integer.parseInt(revisarAnio) && Integer.parseInt(fechaStringFinal.substring(6,10)) > Integer.parseInt(revisarAnio)){
+                    //Seguir aqui
+                    //String 
+                    
+                }
+            }
             
             documento.open();
-            
-            Paragraph parrafo = new Paragraph("PDF de prueba");
+            String p = "no se ";
+            Paragraph parrafo = new Paragraph(p);
             
             documento.add(parrafo);
             
