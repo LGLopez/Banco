@@ -298,10 +298,10 @@
                               <EmptySpace max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="0" max="-2" attributes="0">
                                   <Component id="txtClabe" max="32767" attributes="0"/>
-                                  <Component id="txtFechaCuenta" max="32767" attributes="0"/>
                                   <Component id="jComboTipoCuenta" pref="108" max="32767" attributes="0"/>
                                   <Component id="jComboIdCliente" min="-2" pref="78" max="-2" attributes="0"/>
                                   <Component id="txtMonto" alignment="0" max="32767" attributes="0"/>
+                                  <Component id="dateCuentas" alignment="0" max="32767" attributes="0"/>
                               </Group>
                           </Group>
                           <Group type="102" alignment="0" attributes="0">
@@ -317,7 +317,7 @@
                               <Component id="btnGuardarCuenta" min="-2" max="-2" attributes="0"/>
                           </Group>
                       </Group>
-                      <EmptySpace pref="89" max="32767" attributes="0"/>
+                      <EmptySpace pref="85" max="32767" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -345,10 +345,10 @@
                           <Component id="txtMonto" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="jLabel22" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
-                      <EmptySpace type="separate" min="-2" max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="jLabel13" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="txtFechaCuenta" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace type="separate" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="1" attributes="0">
+                          <Component id="jLabel13" min="-2" max="-2" attributes="0"/>
+                          <Component id="dateCuentas" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace pref="75" max="32767" attributes="0"/>
                       <Group type="103" groupAlignment="3" attributes="0">
@@ -390,8 +390,6 @@
               </Properties>
             </Component>
             <Component class="javax.swing.JTextField" name="txtClabe">
-            </Component>
-            <Component class="javax.swing.JTextField" name="txtFechaCuenta">
             </Component>
             <Component class="javax.swing.JComboBox" name="jComboTipoCuenta">
               <Properties>
@@ -466,6 +464,8 @@
               <Properties>
                 <Property name="text" type="java.lang.String" value="$"/>
               </Properties>
+            </Component>
+            <Component class="com.toedter.calendar.JDateChooser" name="dateCuentas">
             </Component>
           </SubComponents>
         </Container>

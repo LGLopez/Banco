@@ -48,7 +48,7 @@ public class JFrameBanco extends javax.swing.JFrame {
         }
         
         txtIdCliente.setEditable(false);
-        txtFechaCuenta.setEditable(false);
+        
        
         for(int i = 1; i < Id; i++){
             jComboIdCliente.addItem(String.valueOf(i));
@@ -59,7 +59,7 @@ public class JFrameBanco extends javax.swing.JFrame {
         
         Date date = new Date();
         SimpleDateFormat formatoFecha = new SimpleDateFormat("dd-MM-yyyy");       
-        txtFechaCuenta.setText(formatoFecha.format(date));
+        
     }
     
     String patronNombre = "^([A-Z]{1}[a-zA-Z\\s]+)$";
@@ -433,6 +433,8 @@ public class JFrameBanco extends javax.swing.JFrame {
         file = new File("Clientes.obj");
         raf = new RandomAccessFile(file, "r");
         
+        SimpleDateFormat formatoFecha = new SimpleDateFormat("dd/MM/yyyy");
+        
         String idCliente;
         String clabe;
         String tipoCuenta;
@@ -443,7 +445,7 @@ public class JFrameBanco extends javax.swing.JFrame {
         clabe = txtClabe.getText();
         tipoCuenta = (String) jComboTipoCuenta.getSelectedItem();
         monto = txtMonto.getText();
-        fecha = txtFechaCuenta.getText();
+        fecha = formatoFecha.format(dateCuentas.getDate());
         
         Pattern a = Pattern.compile(patronClabe);
         Pattern b = Pattern.compile(patronMonto);
@@ -537,7 +539,7 @@ public class JFrameBanco extends javax.swing.JFrame {
                     txtClabe.setText(b);
                     jComboTipoCuenta.setSelectedItem(c);
                     txtMonto.setText(d);
-                    txtFechaCuenta.setText(e);
+                    //txtFechaCuenta.setText(e);
                 }
             }
         }catch(EOFException ex){}
@@ -551,6 +553,8 @@ public class JFrameBanco extends javax.swing.JFrame {
         fileAux = new File("CuentasAux.obj");
         rafAux = new RandomAccessFile(fileAux, "rw");
         
+        SimpleDateFormat formatoFecha = new SimpleDateFormat("dd/MM/yyyy");
+        
         String idCliente;
         String clabe;
         String tipoCuenta;
@@ -561,7 +565,7 @@ public class JFrameBanco extends javax.swing.JFrame {
         clabe = txtClabe.getText();
         tipoCuenta = (String) jComboTipoCuenta.getSelectedItem();
         monto = txtMonto.getText();
-        fecha = txtFechaCuenta.getText();
+        fecha = formatoFecha.format(dateCuentas.getDate());
         
         rafCu.seek(0);
         rafAux.seek(0);
@@ -941,7 +945,6 @@ public class JFrameBanco extends javax.swing.JFrame {
         jLabel12 = new javax.swing.JLabel();
         jLabel13 = new javax.swing.JLabel();
         txtClabe = new javax.swing.JTextField();
-        txtFechaCuenta = new javax.swing.JTextField();
         jComboTipoCuenta = new javax.swing.JComboBox<>();
         jComboIdCliente = new javax.swing.JComboBox<>();
         txtMonto = new javax.swing.JTextField();
@@ -951,6 +954,7 @@ public class JFrameBanco extends javax.swing.JFrame {
         btnEditarCuenta = new javax.swing.JButton();
         btnGuardarCuenta = new javax.swing.JButton();
         jLabel22 = new javax.swing.JLabel();
+        dateCuentas = new com.toedter.calendar.JDateChooser();
         jPanel3 = new javax.swing.JPanel();
         jLabel14 = new javax.swing.JLabel();
         jLabel15 = new javax.swing.JLabel();
@@ -1197,10 +1201,10 @@ public class JFrameBanco extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(txtClabe)
-                            .addComponent(txtFechaCuenta)
                             .addComponent(jComboTipoCuenta, 0, 108, Short.MAX_VALUE)
                             .addComponent(jComboIdCliente, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(txtMonto)))
+                            .addComponent(txtMonto)
+                            .addComponent(dateCuentas, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addGap(65, 65, 65)
                         .addComponent(btnAgregarCuenta)
@@ -1212,7 +1216,7 @@ public class JFrameBanco extends javax.swing.JFrame {
                         .addComponent(btnEditarCuenta)
                         .addGap(18, 18, 18)
                         .addComponent(btnGuardarCuenta)))
-                .addContainerGap(89, Short.MAX_VALUE))
+                .addContainerGap(85, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1235,9 +1239,9 @@ public class JFrameBanco extends javax.swing.JFrame {
                     .addComponent(txtMonto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel22))
                 .addGap(18, 18, 18)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(jLabel13)
-                    .addComponent(txtFechaCuenta, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(dateCuentas, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 75, Short.MAX_VALUE)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnAgregarCuenta)
@@ -1592,6 +1596,7 @@ public class JFrameBanco extends javax.swing.JFrame {
     private javax.swing.JButton btnGenerar;
     private javax.swing.JButton btnGuardarCuenta;
     private javax.swing.JButton btnGuardarMov;
+    private com.toedter.calendar.JDateChooser dateCuentas;
     private javax.swing.JComboBox<String> jComboCuentaRe;
     private javax.swing.JComboBox<String> jComboEstado;
     private javax.swing.JComboBox<String> jComboIdCliente;
@@ -1634,7 +1639,6 @@ public class JFrameBanco extends javax.swing.JFrame {
     private javax.swing.JTextField txtCuenta;
     private javax.swing.JTextField txtDireccion;
     private javax.swing.JTextField txtEmail;
-    private javax.swing.JTextField txtFechaCuenta;
     private javax.swing.JTextField txtIdCliente;
     private javax.swing.JTextField txtMonto;
     private javax.swing.JTextField txtMontoMov;
