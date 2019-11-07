@@ -34,6 +34,8 @@ public class JFrameBanco extends javax.swing.JFrame {
     File file, fileAux, fileId, fileIdEliminado, fileCu, fileMo;
     int Id, IdEliminado;  
     
+    SimpleDateFormat formatoFecha = new SimpleDateFormat("dd/MM/yyyy");
+    
     public JFrameBanco() throws IOException {
         initComponents();
         fileId = new File("Id.obj");
@@ -433,7 +435,10 @@ public class JFrameBanco extends javax.swing.JFrame {
         file = new File("Clientes.obj");
         raf = new RandomAccessFile(file, "r");
         
-        SimpleDateFormat formatoFecha = new SimpleDateFormat("dd/MM/yyyy");
+        if(dateCuentas.getDate() == null){
+            JOptionPane.showMessageDialog(this, "No se lleno el campo fecha.");
+            return;
+        }
         
         String idCliente;
         String clabe;
@@ -884,12 +889,24 @@ public class JFrameBanco extends javax.swing.JFrame {
     }
     
     public void generarReporte() throws IOException{
+        Date dInicio = jDateFechaInicio.getDate();
+        Date dFinal = jDateFechaFin.getDate();
+        
+        if(dInicio == null || dFinal == null){
+            JOptionPane.showMessageDialog(this, "No se han llenado todas las fechas.");
+            return;
+        }
+        
+        String fechaStringInicio = formatoFecha.format(dInicio);
+        String fechaStringFinal = formatoFecha.format(dFinal);
+        String paraDocumento = fechaStringInicio + "-" + fechaStringFinal + ".pdf";
+        
         Document documento = new Document(PageSize.A4);
-        documento.addAuthor("No Author");
-        documento.addTitle("No Title");
+        documento.addAuthor("Banco el cerdin");
+        documento.addTitle("Reportes");
         
         try {
-            PdfWriter.getInstance(documento, new FileOutputStream("MiPDF.pdf"));
+            PdfWriter.getInstance(documento, new FileOutputStream("reportes.pdf"));
             
             documento.open();
             
@@ -1532,7 +1549,9 @@ public class JFrameBanco extends javax.swing.JFrame {
     private void btnGenerarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGenerarActionPerformed
         try {
             generarReporte();
-        } catch (IOException ex) {}
+        } catch (IOException ex) {
+            System.out.println("No se pudo crear el pdf");
+        }
     }//GEN-LAST:event_btnGenerarActionPerformed
 
     private void txtIdClienteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtIdClienteActionPerformed
