@@ -1448,41 +1448,31 @@ public class JFrameBanco extends javax.swing.JFrame {
     private void btnAgregarClienteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAgregarClienteActionPerformed
         try {
             addCliente();
-        } catch (IOException ex) {
-            Logger.getLogger(JFrameBanco.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        } catch (IOException ex) {}
     }//GEN-LAST:event_btnAgregarClienteActionPerformed
 
     private void btnCancelarClienteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelarClienteActionPerformed
         try {
             cleanCliente();
-        } catch (IOException ex) {
-            Logger.getLogger(JFrameBanco.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        } catch (IOException ex) {}
     }//GEN-LAST:event_btnCancelarClienteActionPerformed
 
     private void btnEliminarClienteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarClienteActionPerformed
         try {
             eliminarCliente();
-        } catch (IOException ex) {
-            Logger.getLogger(JFrameBanco.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        } catch (IOException ex) {}
     }//GEN-LAST:event_btnEliminarClienteActionPerformed
 
     private void btnEditarClienteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditarClienteActionPerformed
         try {
             editarCliente();
-        } catch (IOException ex) {
-            Logger.getLogger(JFrameBanco.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        } catch (IOException ex) {}
     }//GEN-LAST:event_btnEditarClienteActionPerformed
 
     private void btnAgregarCuentaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAgregarCuentaActionPerformed
         try {
             addCuenta();
-        } catch (IOException ex) {
-            Logger.getLogger(JFrameBanco.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        } catch (IOException ex) {}
     }//GEN-LAST:event_btnAgregarCuentaActionPerformed
 
     private void btnCancelarCuentaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelarCuentaActionPerformed
@@ -1492,33 +1482,25 @@ public class JFrameBanco extends javax.swing.JFrame {
     private void btnEliminarCuentaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarCuentaActionPerformed
         try {
             eliminarCuenta();
-        } catch (IOException ex) {
-            Logger.getLogger(JFrameBanco.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        } catch (IOException ex) {}
     }//GEN-LAST:event_btnEliminarCuentaActionPerformed
 
     private void btnEditarCuentaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditarCuentaActionPerformed
         try {
             editarCuenta();
-        } catch (IOException ex) {
-            Logger.getLogger(JFrameBanco.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        } catch (IOException ex) {}
     }//GEN-LAST:event_btnEditarCuentaActionPerformed
 
     private void btnGuardarCuentaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarCuentaActionPerformed
         try {
             guardarCuenta();
-        } catch (IOException ex) {
-            Logger.getLogger(JFrameBanco.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        } catch (IOException ex) {}
     }//GEN-LAST:event_btnGuardarCuentaActionPerformed
 
     private void btnAgregarMovActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAgregarMovActionPerformed
        try {
             addMovimiento();
-        } catch (IOException ex) {
-            Logger.getLogger(JFrameBanco.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        } catch (IOException ex) {}
     }//GEN-LAST:event_btnAgregarMovActionPerformed
 
     private void btnCancelarMovActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelarMovActionPerformed
@@ -1528,25 +1510,19 @@ public class JFrameBanco extends javax.swing.JFrame {
     private void btnEliminarMovActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarMovActionPerformed
       try {
             eliminarMovimiento();
-        } catch (IOException ex) {
-            Logger.getLogger(JFrameBanco.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        } catch (IOException ex) {}
     }//GEN-LAST:event_btnEliminarMovActionPerformed
 
     private void btnEditarMovActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditarMovActionPerformed
        try {
             editarMovimiento();
-        } catch (IOException ex) {
-            Logger.getLogger(JFrameBanco.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        } catch (IOException ex) {}
     }//GEN-LAST:event_btnEditarMovActionPerformed
 
     private void btnGuardarMovActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarMovActionPerformed
         try {
             guardarMovimiento();
-        } catch (IOException ex) {
-            Logger.getLogger(JFrameBanco.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        } catch (IOException ex) {}
     }//GEN-LAST:event_btnGuardarMovActionPerformed
 
     private void btnGenerarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGenerarActionPerformed
@@ -1595,9 +1571,7 @@ public class JFrameBanco extends javax.swing.JFrame {
             public void run() {
                 try {
                     new JFrameBanco().setVisible(true);
-                } catch (IOException ex) {
-                    Logger.getLogger(JFrameBanco.class.getName()).log(Level.SEVERE, null, ex);
-                }
+                } catch (IOException ex) {}
             }
         });
     }
