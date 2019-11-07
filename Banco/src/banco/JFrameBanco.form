@@ -93,7 +93,7 @@
                                   </Group>
                               </Group>
                               <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                                  <Component id="txtEmail" max="32767" attributes="0"/>
+                                  <Component id="txtEmail" pref="109" max="32767" attributes="0"/>
                                   <Component id="txtTelefono" alignment="0" max="32767" attributes="0"/>
                                   <Component id="txtDireccion" alignment="0" max="32767" attributes="0"/>
                                   <Component id="jComboEstado" max="32767" attributes="0"/>
@@ -371,7 +371,7 @@
             </Component>
             <Component class="javax.swing.JLabel" name="jLabel10">
               <Properties>
-                <Property name="text" type="java.lang.String" value="Clabe:"/>
+                <Property name="text" type="java.lang.String" value="Clave:"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JLabel" name="jLabel11">
@@ -413,6 +413,9 @@
                   <StringArray count="0"/>
                 </Property>
               </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jComboIdClienteActionPerformed"/>
+              </Events>
               <AuxValues>
                 <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
               </AuxValues>
@@ -498,11 +501,11 @@
                               </Group>
                               <EmptySpace type="unrelated" max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                                  <Component id="jComboTipoMovimineto" max="32767" attributes="0"/>
+                                  <Component id="jComboTipoMovimiento" pref="123" max="32767" attributes="0"/>
                                   <Component id="txtMontoMov" max="32767" attributes="0"/>
                                   <Component id="txtCuenta" max="32767" attributes="0"/>
+                                  <Component id="jComboIdMov" alignment="0" min="-2" pref="73" max="-2" attributes="0"/>
                                   <Component id="jDateFechaMov" alignment="0" max="32767" attributes="0"/>
-                                  <Component id="jComboIdMov" alignment="0" min="-2" pref="101" max="-2" attributes="0"/>
                               </Group>
                           </Group>
                           <Group type="102" alignment="0" attributes="0">
@@ -518,7 +521,7 @@
                               <Component id="btnGuardarMov" min="-2" max="-2" attributes="0"/>
                           </Group>
                       </Group>
-                      <EmptySpace pref="115" max="32767" attributes="0"/>
+                      <EmptySpace pref="105" max="32767" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -538,7 +541,7 @@
                       <EmptySpace min="-2" pref="20" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="3" attributes="0">
                           <Component id="jLabel16" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="jComboTipoMovimineto" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="jComboTipoMovimiento" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace type="separate" min="-2" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="3" attributes="0">
@@ -589,14 +592,12 @@
                 <Property name="text" type="java.lang.String" value="Cuenta:"/>
               </Properties>
             </Component>
-            <Component class="javax.swing.JComboBox" name="jComboTipoMovimineto">
+            <Component class="javax.swing.JComboBox" name="jComboTipoMovimiento">
               <Properties>
                 <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
-                  <StringArray count="4">
-                    <StringItem index="0" value="Item 1"/>
-                    <StringItem index="1" value="Item 2"/>
-                    <StringItem index="2" value="Item 3"/>
-                    <StringItem index="3" value="Item 4"/>
+                  <StringArray count="2">
+                    <StringItem index="0" value="Deposito"/>
+                    <StringItem index="1" value="Cheque"/>
                   </StringArray>
                 </Property>
               </Properties>
@@ -685,7 +686,7 @@
                               </Group>
                               <EmptySpace type="separate" max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                                  <Component id="jComboCuentaRe" max="32767" attributes="0"/>
+                                  <Component id="jComboCuentaRe" pref="106" max="32767" attributes="0"/>
                                   <Component id="jDateFechaInicio" alignment="0" max="32767" attributes="0"/>
                                   <Component id="jDateFechaFin" alignment="0" max="32767" attributes="0"/>
                               </Group>
@@ -733,11 +734,8 @@
             <Component class="javax.swing.JComboBox" name="jComboCuentaRe">
               <Properties>
                 <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
-                  <StringArray count="4">
-                    <StringItem index="0" value="Item 1"/>
-                    <StringItem index="1" value="Item 2"/>
-                    <StringItem index="2" value="Item 3"/>
-                    <StringItem index="3" value="Item 4"/>
+                  <StringArray count="1">
+                    <StringItem index="0" value="Cuentas"/>
                   </StringArray>
                 </Property>
               </Properties>
