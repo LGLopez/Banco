@@ -5,6 +5,7 @@
  */
 package banco;
 
+import com.itextpdf.text.Chunk;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.PageSize;
@@ -665,6 +666,9 @@ public class JFrameBanco extends javax.swing.JFrame {
         fileMo = new File("Movimientos.obj");
         rafMo = new RandomAccessFile(fileMo, "rw");
         
+        fileCu = new File("Cuentas.obj");
+        rafCu = new RandomAccessFile(fileCu, "r");
+        
         file = new File("Clientes.obj");
         raf = new RandomAccessFile(file, "r");
         
@@ -686,13 +690,16 @@ public class JFrameBanco extends javax.swing.JFrame {
         Pattern a = Pattern.compile(patronCuenta);
         Pattern b = Pattern.compile(patronMonto);
 
-        String aux, aux1 = null;
+        String aux, aux1 = null, aux3 = null;
         int existe = 0, repetido = 0;
+        
+        Cuenta unaCuenta = new Cuenta();
         try{
             for(int i = 0; i < raf.length(); i++){
                 aux = raf.readUTF();
                 if(idCliente.equals(aux)){
                     existe = 1;
+                    aux3 = aux;
                 }
                 else{
                     raf.readUTF();
@@ -703,21 +710,80 @@ public class JFrameBanco extends javax.swing.JFrame {
                     raf.readUTF();
                 }
             }
-        }catch(EOFException ex){}    
-        try{
-            for(int i = 0; i < rafMo.length(); i++){
-                aux1 = rafMo.readUTF();
-                if(idCliente.equals(aux1)){
-                    repetido = 1;
+        }catch(EOFException ex){}  
+        
+        for (int i = 0; i < rafCu.length(); i++){
+            aux = rafCu.readUTF();
+            unaCuenta.setIdCliente(aux);
+            
+            if (aux3.equals(aux)){
+                unaCuenta.setClabe(rafCu.readUTF());
+                unaCuenta.setTipoCuenta(rafCu.readUTF());
+                
+                int v = Integer.parseInt(rafCu.readUTF());
+                
+                if(Integer.parseInt(monto) < v){
+                    unaCuenta.setMonto(String.valueOf(v-Integer.parseInt(monto)));
+                    unaCuenta.setFecha(rafCu.readUTF());
+                    ////////////////////////////////////////////
+                    String opc = JOptionPane.showInputDialog("Ingrese id: ");
+                    rafCu.seek(0);
+                    rafAux.seek(0);
+                    String aux4 = null;
+                   
+//MOVIMIENTOS
+
+                    try{
+                        for(int i = 0; i <  ; i++){
+                            aux4 = rafCu.readUTF();
+                            if(!aux.equals(opc)){
+                                rafAux.writeUTF(aux);
+                                rafAux.writeUTF(rafCu.readUTF());
+                                rafAux.writeUTF(rafCu.readUTF());
+                                rafAux.writeUTF(rafCu.readUTF());
+                                rafAux.writeUTF(rafCu.readUTF());
+                                rafAux.writeUTF(rafCu.readUTF());
+                                rafAux.writeUTF(rafCu.readUTF());
+                            }
+                            else{
+                                raf.readUTF();
+                                raf.readUTF();
+                                raf.readUTF();
+                                raf.readUTF();
+                                raf.readUTF();
+                                raf.readUTF();
+                            }
+                        }
+                    }catch(EOFException ex){}
+
+                    System.out.println(aux);
+                    rafAux.seek(raf.length());
+                    rafAux.writeUTF(opc);
+                    rafAux.writeUTF(nombre);
+                    rafAux.writeUTF(paterno);
+                    rafAux.writeUTF(materno);
+                    rafAux.writeUTF(direccion);
+                    rafAux.writeUTF(telefono);
+                    rafAux.writeUTF(email);
+
+                    rafIdEliminado.close();               
+                    rafId.close();
+                    raf.close();
+                    rafAux.close();
+
+                    if(aux!= null){
+                        file.delete();
+                        file = new File("Clientes.obj");
+                        fileAux.renameTo(file);
+                    }
                 }
-                else{
-                    rafMo.readUTF();
-                    rafMo.readUTF();
-                    rafMo.readUTF();
-                    rafMo.readUTF();
+                else {
+                    rafCu.readUTF();
                 }
+                
             }
-        }catch(EOFException ex){}
+            
+        }
 
         if(existe == 1){
             if(!a.matcher(cuenta).matches()){
@@ -888,7 +954,7 @@ public class JFrameBanco extends javax.swing.JFrame {
         cleanMovimiento();
     }
     
-    public void generarReporte() throws IOException{
+    public void generarReporte(Document documento) throws IOException{
         fileCu = new File("Cuentas.obj");
         rafCu = new RandomAccessFile(fileCu, "r");
         
@@ -906,7 +972,7 @@ public class JFrameBanco extends javax.swing.JFrame {
         String fechaStringFinal = formatoFecha.format(dFinal);
         //String paraDocumento = fechaStringInicio + "-" + fechaStringFinal + ".pdf";
         
-        Document documento = new Document(PageSize.A4);
+        //Document documento = new Document(PageSize.A4);
         documento.addAuthor("Banco el cerdin");
         documento.addTitle("Reportes");
         
@@ -925,21 +991,20 @@ public class JFrameBanco extends javax.swing.JFrame {
                 String revisarAnio = fechaDocumento.substring(6,10);
                 
                 if(Integer.parseInt(fechaStringInicio.substring(6, 10)) < Integer.parseInt(revisarAnio) && Integer.parseInt(fechaStringFinal.substring(6,10)) > Integer.parseInt(revisarAnio)){
-                    //Seguir aqui
-                    //String 
                     
+                    documento.add(new Paragraph(cuentaIdCliente));
+                    documento.add(Chunk.NEWLINE);
+                    documento.add(new Paragraph(cuentaClabe));
+                    documento.add(Chunk.NEWLINE);
+                    documento.add(new Paragraph(cuentaTipo));
+                    documento.add(Chunk.NEWLINE);
+                    documento.add(new Paragraph(cuentaMonto));
+                    documento.add(Chunk.NEWLINE);
                 }
             }
             
-            documento.open();
-            String p = "no se ";
-            Paragraph parrafo = new Paragraph(p);
-            
-            documento.add(parrafo);
-            
-            
-            
         } catch (DocumentException ex) {
+            documento.close();
             System.out.println("Error al crear el PDF");
         }
         
@@ -1110,7 +1175,7 @@ public class JFrameBanco extends javax.swing.JFrame {
                                     .addComponent(jLabel8))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)))
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(txtEmail, javax.swing.GroupLayout.DEFAULT_SIZE, 109, Short.MAX_VALUE)
+                            .addComponent(txtEmail)
                             .addComponent(txtTelefono)
                             .addComponent(txtDireccion)
                             .addComponent(jComboEstado, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -1241,7 +1306,7 @@ public class JFrameBanco extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(txtClabe)
-                            .addComponent(jComboTipoCuenta, 0, 108, Short.MAX_VALUE)
+                            .addComponent(jComboTipoCuenta, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(jComboIdCliente, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(txtMonto)
                             .addComponent(dateCuentas, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
@@ -1361,11 +1426,11 @@ public class JFrameBanco extends javax.swing.JFrame {
                                 .addComponent(jLabel16)))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jComboTipoMovimiento, 0, 123, Short.MAX_VALUE)
+                            .addComponent(jComboTipoMovimiento, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(txtMontoMov)
                             .addComponent(txtCuenta)
-                            .addComponent(jComboIdMov, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jDateFechaMov, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                            .addComponent(jDateFechaMov, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jComboIdMov, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(jPanel3Layout.createSequentialGroup()
                         .addGap(61, 61, 61)
                         .addComponent(btnAgregarMov)
@@ -1443,7 +1508,7 @@ public class JFrameBanco extends javax.swing.JFrame {
                             .addComponent(jLabel19))
                         .addGap(18, 18, 18)
                         .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jComboCuentaRe, 0, 106, Short.MAX_VALUE)
+                            .addComponent(jComboCuentaRe, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(jDateFechaInicio, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(jDateFechaFin, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                     .addGroup(jPanel4Layout.createSequentialGroup()
@@ -1570,10 +1635,12 @@ public class JFrameBanco extends javax.swing.JFrame {
     }//GEN-LAST:event_btnGuardarMovActionPerformed
 
     private void btnGenerarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGenerarActionPerformed
+        Document doc = new Document(PageSize.A4);
         try {
-            generarReporte();
+            generarReporte(doc);
         } catch (IOException ex) {
-            System.out.println("No se pudo crear el pdf");
+            doc.close();
+            System.out.println("561No se pudo crear el pdf");
         }
     }//GEN-LAST:event_btnGenerarActionPerformed
 

@@ -504,8 +504,8 @@
                                   <Component id="jComboTipoMovimiento" max="32767" attributes="0"/>
                                   <Component id="txtMontoMov" max="32767" attributes="0"/>
                                   <Component id="txtCuenta" max="32767" attributes="0"/>
-                                  <Component id="jComboIdMov" alignment="0" min="-2" pref="73" max="-2" attributes="0"/>
                                   <Component id="jDateFechaMov" alignment="0" max="32767" attributes="0"/>
+                                  <Component id="jComboIdMov" min="-2" pref="73" max="-2" attributes="0"/>
                               </Group>
                           </Group>
                           <Group type="102" alignment="0" attributes="0">
