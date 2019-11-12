@@ -31,8 +31,8 @@ import javax.swing.JOptionPane;
  */
 public class JFrameBanco extends javax.swing.JFrame {
 
-    RandomAccessFile raf, rafAux, rafId, rafIdEliminado, rafCu, rafMo,rafCuId, rafCuIdEliminado, rafCuAux;
-    File file, fileAux, fileId, fileIdEliminado, fileCu, fileMo, fileCuId, fileCuIdEliminado, fileCuAux;
+    RandomAccessFile raf, rafAux, rafId, rafIdEliminado, rafCu, rafMo,rafCuId, rafCuIdEliminado, rafCuAux, rafMov, rafDe;
+    File file, fileAux, fileId, fileIdEliminado, fileCu, fileMo, fileCuId, fileCuIdEliminado, fileCuAux, fileMov, fileDe;
     int Id, IdEliminado, IdCu, IdEliminadoCu;
     
     SimpleDateFormat formatoFecha = new SimpleDateFormat("dd/MM/yyyy");
@@ -727,6 +727,8 @@ public class JFrameBanco extends javax.swing.JFrame {
     }
     
     public void addTransferencia() throws FileNotFoundException, IOException{
+        int sizeOfMov = 0;
+        
         fileCu = new File("Cuentas.obj");
         rafCu = new RandomAccessFile(fileCu, "rw");
         
@@ -735,6 +737,17 @@ public class JFrameBanco extends javax.swing.JFrame {
         
         fileCuAux = new File("CuentasAux.obj");
         rafCuAux = new RandomAccessFile(fileCuAux, "rw");
+        
+        fileMov = new File("Movimientos.obj");
+        rafMov = new RandomAccessFile(fileMov, "rw");
+        
+        if(fileMov.length() == 0){
+            rafMov.writeInt(0);
+            sizeOfMov = 0;
+        }
+        else{
+            sizeOfMov = rafMov.readInt();
+        }
         
         if(fileCuId.length() == 0){
             IdCu = 1;
@@ -762,10 +775,15 @@ public class JFrameBanco extends javax.swing.JFrame {
         String aux = txtOrigenTra.getText();
         String aux1 = txtDestinoTra.getText();
         String cantidad = txtMontoTra.getText();
+        String fechaMov = formatoFecha.format(jDateFechaTra.getDate());
         
         Pattern x = Pattern.compile(patronClabe);
         Pattern y = Pattern.compile(patronMonto);
         
+        if(jDateFechaTra.getDate() == null){
+            JOptionPane.showMessageDialog(this, "No se lleno el campo fecha.");
+            return;
+        }
         if(!x.matcher(aux).matches()){
             JOptionPane.showMessageDialog(this, "CLABE de origen invalida");
         }
@@ -776,11 +794,9 @@ public class JFrameBanco extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "Monto invalido");
         }
         else{
-        
-        
-        if(aux.equals(aux1)){
-            JOptionPane.showMessageDialog(this, "La CLABE no puede ser la misma");
-        }
+            if(aux.equals(aux1)){
+                JOptionPane.showMessageDialog(this, "La CLABE no puede ser la misma");
+            }
         else{
             try{
                 for(int i = 0; i < IdCu - IdEliminadoCu; i++){
@@ -879,8 +895,17 @@ public class JFrameBanco extends javax.swing.JFrame {
                 rafCuAux.writeUTF(B);
                 rafCuAux.writeUTF(String.valueOf(Integer.parseInt(C) + Integer.parseInt(cantidad)));
                 rafCuAux.writeUTF(D);
+                
+                rafMov.seek(0);
+                sizeOfMov++;
+                rafMov.writeInt(sizeOfMov);
+                rafMov.seek(rafMov.length());
+                rafMov.writeUTF(aux);
+                rafMov.writeUTF(aux1);
+                rafMov.writeUTF(cantidad);
+                rafMov.writeUTF(fechaMov);
             }
-            
+            rafMov.close();
             rafCu.close();
             rafCuAux.close();
             rafCuId.close();
@@ -902,6 +927,11 @@ public class JFrameBanco extends javax.swing.JFrame {
     }
     
     public void addDeposito() throws FileNotFoundException, IOException{
+        int sizeOfDe = 0;
+        
+        fileDe = new File("Depositos.obj");
+        rafDe = new RandomAccessFile(fileDe, "rw");
+        
         fileCu = new File("Cuentas.obj");
         rafCu = new RandomAccessFile(fileCu, "rw");
         
@@ -910,6 +940,14 @@ public class JFrameBanco extends javax.swing.JFrame {
         
         fileCuAux = new File("CuentasAux.obj");
         rafCuAux = new RandomAccessFile(fileCuAux, "rw");
+        
+        if(fileDe.length() == 0){
+            rafDe.writeInt(0);
+            sizeOfDe = 0;
+        }
+        else{
+            sizeOfDe = rafMov.readInt();
+        }
         
         if(fileCuId.length() == 0){
             IdCu = 1;
@@ -935,10 +973,15 @@ public class JFrameBanco extends javax.swing.JFrame {
         int creada = 0;
         String aux = txtDestinoDep.getText();
         String cantidad = txtMontoDep.getText();
+        String fechaDe = formatoFecha.format(jDateFechaDep.getDate());
         
         Pattern x = Pattern.compile(patronClabe);
         Pattern y = Pattern.compile(patronMonto);
         
+        if(jDateFechaDep.getDate() == null){
+            JOptionPane.showMessageDialog(this, "No se lleno el campo fecha.");
+            return;
+        }
         if(!x.matcher(aux).matches()){
             JOptionPane.showMessageDialog(this, "CLABE invalida");
         }
@@ -988,8 +1031,16 @@ public class JFrameBanco extends javax.swing.JFrame {
                 rafCuAux.writeUTF(b);
                 rafCuAux.writeUTF(String.valueOf(Integer.parseInt(c) + Integer.parseInt(cantidad)));
                 rafCuAux.writeUTF(d);
+                
+                rafDe.seek(0);
+                sizeOfDe++;
+                rafDe.writeInt(sizeOfDe);
+                rafDe.seek(rafDe.length());
+                rafDe.writeUTF(aux);
+                rafDe.writeUTF(cantidad);
+                rafDe.writeUTF(fechaDe);
         }
-
+                rafDe.close();
                 rafCu.close();
                 rafCuAux.close();
                 rafCuId.close();
@@ -1651,7 +1702,7 @@ public class JFrameBanco extends javax.swing.JFrame {
         try {
             addTransferencia();
         } catch (IOException ex) {
-            Logger.getLogger(JFrameBanco.class.getName()).log(Level.SEVERE, null, ex);
+            System.err.print("Ocurrio un fallo en la transferencia");
         }
     }//GEN-LAST:event_btnGuardarTraActionPerformed
 
