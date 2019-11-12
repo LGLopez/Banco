@@ -12,14 +12,12 @@ package banco;
 public class Cuenta {
     private String idCliente;
     private String clabe;
-    private String tipoCuenta;
     private String monto;
     private String fecha;
 
-    public Cuenta(String idCliente, String clabe, String tipoCuenta, String monto, String fecha) {
+    public Cuenta(String idCliente, String clabe, String monto, String fecha) {
         this.idCliente = idCliente;
         this.clabe = clabe;
-        this.tipoCuenta = tipoCuenta;
         this.monto = monto;
         this.fecha = fecha;
     }
@@ -41,14 +39,6 @@ public class Cuenta {
 
     public void setClabe(String clabe) {
         this.clabe = clabe;
-    }
-
-    public String getTipoCuenta() {
-        return tipoCuenta;
-    }
-
-    public void setTipoCuenta(String tipoCuenta) {
-        this.tipoCuenta = tipoCuenta;
     }
 
     public String getMonto() {

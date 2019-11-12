@@ -31,9 +31,9 @@ import javax.swing.JOptionPane;
  */
 public class JFrameBanco extends javax.swing.JFrame {
 
-    RandomAccessFile raf, rafAux, rafId, rafIdEliminado, rafCu, rafMo;
-    File file, fileAux, fileId, fileIdEliminado, fileCu, fileMo;
-    int Id, IdEliminado;  
+    RandomAccessFile raf, rafAux, rafId, rafIdEliminado, rafCu, rafMo,rafCuId, rafCuIdEliminado, rafCuAux;
+    File file, fileAux, fileId, fileIdEliminado, fileCu, fileMo, fileCuId, fileCuIdEliminado, fileCuAux;
+    int Id, IdEliminado, IdCu, IdEliminadoCu;
     
     SimpleDateFormat formatoFecha = new SimpleDateFormat("dd/MM/yyyy");
     
@@ -55,8 +55,8 @@ public class JFrameBanco extends javax.swing.JFrame {
        
         for(int i = 1; i < Id; i++){
             jComboIdCliente.addItem(String.valueOf(i));
-            jComboIdMov.addItem(String.valueOf(i));
         }
+        
         txtIdCliente.setText(String.valueOf(Id));
         rafId.close();
         
@@ -71,7 +71,7 @@ public class JFrameBanco extends javax.swing.JFrame {
     String patronTelefono = "^([0-9]{10})$";
     String patronDireccion = "^([a-zA-Z0-9,.#\\s]+)$";
     String patronMonto = "^([0-9]+)$";
-    String patronClabe = "^([0-9]{18})$";
+    String patronClabe = "^([0-9]{5})$";
     String patronCuenta = "^([0-9]{18})$";
     
     public void addCliente() throws FileNotFoundException, IOException{
@@ -182,57 +182,6 @@ public class JFrameBanco extends javax.swing.JFrame {
         rafId.close();
     } 
     
-    public int buscar(String opc) throws FileNotFoundException, IOException{
-       file = new File("Clientes.obj");
-       raf = new RandomAccessFile(file, "r");
-       
-       fileId = new File("Id.obj");
-       rafId = new RandomAccessFile(fileId, "rw");
-        
-       if(fileId.length() == 0){
-            Id = 1;
-            rafId.writeInt(Id);
-       }
-       else{
-          Id = rafId.readInt(); 
-       }
-        fileIdEliminado = new File("IdEliminado.obj");
-        rafIdEliminado = new RandomAccessFile(fileIdEliminado, "rw");
-        
-        if(fileIdEliminado.length() == 0){
-            IdEliminado = 0;
-            rafIdEliminado.writeInt(IdEliminado);
-        }
-        else{
-           IdEliminado = rafIdEliminado.readInt();
-        }
-        for(int i = 1; i < Id-IdEliminado; i++){
-           System.out.println(i);
-           String a = raf.readUTF();
-           System.out.println("       " +a);
-           System.out.println("-------" +opc);
-           if(a.equals(opc)){
-               System.out.println("hola");
-               raf.close();
-               rafId.close();
-               rafIdEliminado.close();
-               return i;
-           }
-           else{
-               String b = raf.readUTF();
-               String c = raf.readUTF();
-               String d = raf.readUTF();
-               String e = raf.readUTF();
-               String f = raf.readUTF();
-               String g = raf.readUTF();
-           }
-        }
-        raf.close();
-        rafId.close();
-        rafIdEliminado.close();
-        return -1;
-    }
-    
     public void editarCliente() throws FileNotFoundException, IOException{
         String nombre;
         String materno;
@@ -329,7 +278,6 @@ public class JFrameBanco extends javax.swing.JFrame {
                 }
             }catch(EOFException ex){}
 
-            System.out.println(aux);
             rafAux.seek(raf.length());
             rafAux.writeUTF(opc);
             rafAux.writeUTF(nombre);
@@ -436,6 +384,50 @@ public class JFrameBanco extends javax.swing.JFrame {
         file = new File("Clientes.obj");
         raf = new RandomAccessFile(file, "r");
         
+        fileId = new File("Id.obj");
+        rafId = new RandomAccessFile(fileId, "rw");
+        
+        if(fileId.length() == 0){
+            Id = 1;
+            rafId.writeInt(Id);
+        }
+        else{
+           Id = rafId.readInt(); 
+        }
+        
+        fileIdEliminado = new File("IdEliminado.obj");
+        rafIdEliminado = new RandomAccessFile(fileIdEliminado, "rw");
+        
+        if(fileIdEliminado.length() == 0){
+            IdEliminado = 0;
+            rafIdEliminado.writeInt(IdEliminado);
+        }
+        else{
+           IdEliminado = rafIdEliminado.readInt(); 
+        }
+        
+        fileCuId = new File("IdCuentas.obj");
+        rafCuId = new RandomAccessFile(fileCuId, "rw");
+        
+        if(fileCuId.length() == 0){
+            IdCu = 1;
+            rafCuId.writeInt(IdCu);
+        }
+        else{
+           IdCu = rafCuId.readInt(); 
+        }
+        
+        fileCuIdEliminado = new File("IdEliminadoCuentas.obj");
+        rafCuIdEliminado = new RandomAccessFile(fileCuIdEliminado, "rw");
+        
+        if(fileCuIdEliminado.length() == 0){
+            IdEliminadoCu = 0;
+            rafCuIdEliminado.writeInt(IdEliminadoCu);
+        }
+        else{
+           IdEliminadoCu = rafCuIdEliminado.readInt(); 
+        }
+        
         if(dateCuentas.getDate() == null){
             JOptionPane.showMessageDialog(this, "No se lleno el campo fecha.");
             return;
@@ -443,13 +435,11 @@ public class JFrameBanco extends javax.swing.JFrame {
         
         String idCliente;
         String clabe;
-        String tipoCuenta;
         String monto;
         String fecha;
         
         idCliente = (String) jComboIdCliente.getSelectedItem();
         clabe = txtClabe.getText();
-        tipoCuenta = (String) jComboTipoCuenta.getSelectedItem();
         monto = txtMonto.getText();
         fecha = formatoFecha.format(dateCuentas.getDate());
         
@@ -459,7 +449,7 @@ public class JFrameBanco extends javax.swing.JFrame {
         String aux, aux1 = null;
         int existe = 0, repetido = 0;
         try{
-            for(int i = 0; i < raf.length(); i++){
+            for(int i = 0; i < Id - IdEliminado; i++){
                 aux = raf.readUTF();
                 if(idCliente.equals(aux)){
                     existe = 1;
@@ -471,11 +461,12 @@ public class JFrameBanco extends javax.swing.JFrame {
                     raf.readUTF();
                     raf.readUTF();
                     raf.readUTF();
+                    
                 }
             }
         }catch(EOFException ex){}    
         try{
-            for(int i = 0; i < rafCu.length(); i++){
+            for(int i = 0; i < IdCu - IdEliminadoCu; i++){
                 aux1 = rafCu.readUTF();
                 if(idCliente.equals(aux1)){
                     repetido = 1;
@@ -484,7 +475,7 @@ public class JFrameBanco extends javax.swing.JFrame {
                     rafCu.readUTF();
                     rafCu.readUTF();
                     rafCu.readUTF();
-                    rafCu.readUTF();
+                    
                 }
             }
         }catch(EOFException ex){}
@@ -501,11 +492,9 @@ public class JFrameBanco extends javax.swing.JFrame {
                     rafCu.seek(rafCu.length());
                     rafCu.writeUTF(idCliente);
                     rafCu.writeUTF(clabe);
-                    rafCu.writeUTF(tipoCuenta);
                     rafCu.writeUTF(monto);
                     rafCu.writeUTF(fecha);
                     rafCu.close();
-
                     cleanCuenta();
                     JOptionPane.showMessageDialog(this, "Agregado exitosamente");
                 }
@@ -519,7 +508,14 @@ public class JFrameBanco extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "El cliente con ese ID no existe");
         }
         raf.close();
-   
+
+        IdCu++;
+        rafCuId.seek(0);
+        rafCuId.writeInt(IdCu);
+        
+        rafCuId.close();
+        rafCuId.close();
+        rafCuIdEliminado.close();
     }
     
     public void cleanCuenta(){
@@ -530,428 +526,484 @@ public class JFrameBanco extends javax.swing.JFrame {
     public void editarCuenta() throws FileNotFoundException, IOException{
         fileCu = new File("Cuentas.obj");
         rafCu = new RandomAccessFile(fileCu, "r");
-              
+        
+        fileCuId = new File("IdCuentas.obj");
+        rafCuId = new RandomAccessFile(fileCuId, "rw");
+        
+        if(fileCuId.length() == 0){
+            IdCu = 1;
+            rafCuId.writeInt(IdCu);
+        }
+        else{
+           IdCu = rafCuId.readInt(); 
+        }
+        
+        fileCuIdEliminado = new File("IdEliminadoCuentas.obj");
+        rafCuIdEliminado = new RandomAccessFile(fileCuIdEliminado, "rw");
+        
+        if(fileCuIdEliminado.length() == 0){
+            IdEliminadoCu = 0;
+            rafCuIdEliminado.writeInt(IdEliminadoCu);
+        }
+        else{
+           IdEliminadoCu = rafCuIdEliminado.readInt(); 
+        }
+        
         String buscar = JOptionPane.showInputDialog("Ingrese id: ");
      
         try{
-            for(int i = 0; i < rafCu.length(); i++){
+            for(int i = 0; i < IdCu - IdEliminadoCu; i++){
                 String a = rafCu.readUTF();
                 String b = rafCu.readUTF();
                 String c = rafCu.readUTF();
                 String d = rafCu.readUTF();
-                String e = rafCu.readUTF();
+               // String e = rafCu.readUTF();
                 if(buscar.equals(a)){
                     jComboIdCliente.setSelectedItem(a);
                     txtClabe.setText(b);
-                    jComboTipoCuenta.setSelectedItem(c);
-                    txtMonto.setText(d);
-                    //txtFechaCuenta.setText(e);
+                    txtMonto.setText(c);
+                    //fechas
                 }
             }
         }catch(EOFException ex){}
         rafCu.close();
+        rafCuId.close();
+        rafCuIdEliminado.close();
     }
     
     public void guardarCuenta() throws FileNotFoundException, IOException{
         fileCu = new File("Cuentas.obj");
         rafCu = new RandomAccessFile(fileCu, "r");
         
-        fileAux = new File("CuentasAux.obj");
-        rafAux = new RandomAccessFile(fileAux, "rw");
+        fileCuAux = new File("CuentasAux.obj");
+        rafCuAux = new RandomAccessFile(fileCuAux, "rw");
+        
+        fileCuId = new File("IdCuentas.obj");
+        rafCuId = new RandomAccessFile(fileCuId, "rw");
+        
+        if(fileCuId.length() == 0){
+            IdCu = 1;
+            rafCuId.writeInt(IdCu);
+        }
+        else{
+           IdCu = rafCuId.readInt(); 
+        }
+        
+        fileCuIdEliminado = new File("IdEliminadoCuentas.obj");
+        rafCuIdEliminado = new RandomAccessFile(fileCuIdEliminado, "rw");
+        
+        if(fileCuIdEliminado.length() == 0){
+            IdEliminadoCu = 0;
+            rafCuIdEliminado.writeInt(IdEliminadoCu);
+        }
+        else{
+           IdEliminadoCu = rafCuIdEliminado.readInt(); 
+        }
         
         SimpleDateFormat formatoFecha = new SimpleDateFormat("dd/MM/yyyy");
         
         String idCliente;
         String clabe;
-        String tipoCuenta;
         String monto;
         String fecha;
         
         idCliente = (String) jComboIdCliente.getSelectedItem();
         clabe = txtClabe.getText();
-        tipoCuenta = (String) jComboTipoCuenta.getSelectedItem();
         monto = txtMonto.getText();
         fecha = formatoFecha.format(dateCuentas.getDate());
         
         rafCu.seek(0);
-        rafAux.seek(0);
+        rafCuAux.seek(0);
         String aux = null;
         
         try{
             System.out.println(idCliente);
-            for(int i = 0; i < rafCu.length(); i++){
+            for(int i = 0; i < IdCu - IdEliminadoCu; i++){
                 System.out.println(aux);
                 aux = rafCu.readUTF();
                 if(!aux.equals(idCliente)){
-                    rafAux.writeUTF(aux);
-                    rafAux.writeUTF(rafCu.readUTF());
-                    rafAux.writeUTF(rafCu.readUTF());
-                    rafAux.writeUTF(rafCu.readUTF());
-                    rafAux.writeUTF(rafCu.readUTF());
+                    rafCuAux.writeUTF(aux);
+                    rafCuAux.writeUTF(rafCu.readUTF());
+                    rafCuAux.writeUTF(rafCu.readUTF());
+                    rafCuAux.writeUTF(rafCu.readUTF());
+                    //rafAux.writeUTF(rafCu.readUTF());
                 }
                 else{
                     rafCu.readUTF();
                     rafCu.readUTF();
                     rafCu.readUTF();
-                    rafCu.readUTF();
+                   // rafCu.readUTF();
                 }
             }
         }catch(EOFException ex){}
         
         System.out.println(aux);
-        rafAux.seek(rafCu.length());
-        rafAux.writeUTF(idCliente);
-        rafAux.writeUTF(clabe);
-        rafAux.writeUTF(tipoCuenta);
-        rafAux.writeUTF(monto);
-        rafAux.writeUTF(fecha);
+        rafCuAux.seek(rafCu.length());
+        rafCuAux.writeUTF(idCliente);
+        rafCuAux.writeUTF(clabe);
+        rafCuAux.writeUTF(monto);
+        rafCuAux.writeUTF(fecha);
 
         rafCu.close();
-        rafAux.close();
-        
+        rafCuAux.close();
+        rafCuId.close();
+        rafCuIdEliminado.close();
         if(aux!= null){
-            file.delete();
-            file = new File("Cuentas.obj");
-            fileAux.renameTo(file);
+            fileCu.delete();
+            fileCu = new File("Cuentas.obj");
+            fileAux.renameTo(fileCu);
         }
         JOptionPane.showMessageDialog(this, "Editado exitosamente");
         cleanCuenta();
     }
     
-    public void eliminarCuenta() throws FileNotFoundException, IOException{
+    public void eliminarCuenta(String opc) throws FileNotFoundException, IOException{
         fileCu = new File("Cuentas.obj");
         rafCu = new RandomAccessFile(fileCu, "r");
         
-        fileAux = new File("CuentasAux.obj");
-        rafAux = new RandomAccessFile(fileAux, "rw");
+        fileCuAux = new File("CuentasAux.obj");
+        rafCuAux = new RandomAccessFile(fileCuAux, "rw");
         
-        String opc = JOptionPane.showInputDialog("Ingrese id: ");
-        rafCu.seek(0);
-        rafAux.seek(0);
-        String aux = null;
+        fileCuId = new File("IdCuentas.obj");
+        rafCuId = new RandomAccessFile(fileCuId, "rw");
         
-        if(opc != null){
-            try{
-                for(int i = 0; i < rafCu.length(); i++){
-                    aux = rafCu.readUTF();
-                    if(!aux.equals(opc)){
-                        rafAux.writeUTF(aux);
-                        rafAux.writeUTF(rafCu.readUTF());
-                        rafAux.writeUTF(rafCu.readUTF());
-                        rafAux.writeUTF(rafCu.readUTF());
-                        rafAux.writeUTF(rafCu.readUTF());
-                    }
-                    else{
-                        rafCu.readUTF();
-                        rafCu.readUTF();
-                        rafCu.readUTF();
-                        rafCu.readUTF();
-                    }        
-                }   
-            }catch(EOFException ex){}
-       
-            JOptionPane.showMessageDialog(this, "Eliminado exitosamente");
-        }
-        
-        rafCu.close();
-        rafAux.close();
-        if(aux != null){
-            file.delete();
-            file = new File("Cuentas.obj");
-            fileAux.renameTo(file);
-        }      
-    }
-    
-    public void addMovimiento() throws FileNotFoundException, IOException{
-        fileMo = new File("Movimientos.obj");
-        rafMo = new RandomAccessFile(fileMo, "rw");
-        
-        fileCu = new File("Cuentas.obj");
-        rafCu = new RandomAccessFile(fileCu, "r");
-        
-        file = new File("Clientes.obj");
-        raf = new RandomAccessFile(file, "r");
-        
-        String idCliente;
-        String cuenta;
-        String tipoMovimiento;
-        String monto;
-        String fecha;
-        
-        
-        idCliente = (String) jComboIdMov.getSelectedItem();
-        cuenta = txtCuenta.getText();
-        tipoMovimiento = (String) jComboTipoMovimiento.getSelectedItem();
-        monto = txtMontoMov.getText();
-        SimpleDateFormat semFormato = new SimpleDateFormat("dd/MM/yyyy");
-        fecha = semFormato.format(jDateFechaMov.getDate());
-
-        
-        Pattern a = Pattern.compile(patronCuenta);
-        Pattern b = Pattern.compile(patronMonto);
-
-        String aux, aux1 = null, aux3 = null;
-        int existe = 0, repetido = 0;
-        
-        Cuenta unaCuenta = new Cuenta();
-        try{
-            for(int i = 0; i < raf.length(); i++){
-                aux = raf.readUTF();
-                if(idCliente.equals(aux)){
-                    existe = 1;
-                    aux3 = aux;
-                }
-                else{
-                    raf.readUTF();
-                    raf.readUTF();
-                    raf.readUTF();
-                    raf.readUTF();
-                    raf.readUTF();
-                    raf.readUTF();
-                }
-            }
-        }catch(EOFException ex){}  
-        
-        for (int i = 0; i < rafCu.length(); i++){
-            aux = rafCu.readUTF();
-            unaCuenta.setIdCliente(aux);
-            
-            if (aux3.equals(aux)){
-                unaCuenta.setClabe(rafCu.readUTF());
-                unaCuenta.setTipoCuenta(rafCu.readUTF());
-                
-                int v = Integer.parseInt(rafCu.readUTF());
-                
-                if(Integer.parseInt(monto) < v){
-                    unaCuenta.setMonto(String.valueOf(v-Integer.parseInt(monto)));
-                    unaCuenta.setFecha(rafCu.readUTF());
-                    ////////////////////////////////////////////
-                    String opc = JOptionPane.showInputDialog("Ingrese id: ");
-                    rafCu.seek(0);
-                    rafAux.seek(0);
-                    String aux4 = null;
-                   
-//MOVIMIENTOS
-
-                    try{
-                        for(int i = 0; i <  ; i++){
-                            aux4 = rafCu.readUTF();
-                            if(!aux.equals(opc)){
-                                rafAux.writeUTF(aux);
-                                rafAux.writeUTF(rafCu.readUTF());
-                                rafAux.writeUTF(rafCu.readUTF());
-                                rafAux.writeUTF(rafCu.readUTF());
-                                rafAux.writeUTF(rafCu.readUTF());
-                                rafAux.writeUTF(rafCu.readUTF());
-                                rafAux.writeUTF(rafCu.readUTF());
-                            }
-                            else{
-                                raf.readUTF();
-                                raf.readUTF();
-                                raf.readUTF();
-                                raf.readUTF();
-                                raf.readUTF();
-                                raf.readUTF();
-                            }
-                        }
-                    }catch(EOFException ex){}
-
-                    System.out.println(aux);
-                    rafAux.seek(raf.length());
-                    rafAux.writeUTF(opc);
-                    rafAux.writeUTF(nombre);
-                    rafAux.writeUTF(paterno);
-                    rafAux.writeUTF(materno);
-                    rafAux.writeUTF(direccion);
-                    rafAux.writeUTF(telefono);
-                    rafAux.writeUTF(email);
-
-                    rafIdEliminado.close();               
-                    rafId.close();
-                    raf.close();
-                    rafAux.close();
-
-                    if(aux!= null){
-                        file.delete();
-                        file = new File("Clientes.obj");
-                        fileAux.renameTo(file);
-                    }
-                }
-                else {
-                    rafCu.readUTF();
-                }
-                
-            }
-            
-        }
-
-        if(existe == 1){
-            if(!a.matcher(cuenta).matches()){
-                JOptionPane.showMessageDialog(this, "Cuenta invalida");
-            }
-            else if(!b.matcher(monto).matches()){
-                JOptionPane.showMessageDialog(this, "Monto invalido");
-            }
-            else{
-                rafMo.seek(rafMo.length());
-                rafMo.writeUTF(idCliente);
-                rafMo.writeUTF(cuenta);
-                rafMo.writeUTF(tipoMovimiento);
-                rafMo.writeUTF(monto);
-                rafMo.writeUTF(fecha);
-                rafMo.close();
-
-                cleanMovimiento();
-                JOptionPane.showMessageDialog(this, "Agregado exitosamente");
-            }
-            
+        if(fileCuId.length() == 0){
+            IdCu = 1;
+            rafCuId.writeInt(IdCu);
         }
         else{
-            JOptionPane.showMessageDialog(this, "El cliente con ese ID no existe");
+           IdCu = rafCuId.readInt(); 
         }
-        raf.close();
-    }
-    
-    public void cleanMovimiento(){
-        txtCuenta.setText("");
-        txtMontoMov.setText("");
-    }
-    
-    public void eliminarMovimiento() throws FileNotFoundException, IOException{
-        fileMo = new File("Movimientos.obj");
-        rafMo = new RandomAccessFile(fileMo, "r");
         
-        fileAux = new File("MovimientosAux.obj");
-        rafAux = new RandomAccessFile(fileAux, "rw");
+        fileCuIdEliminado = new File("IdEliminadoCuentas.obj");
+        rafCuIdEliminado = new RandomAccessFile(fileCuIdEliminado, "rw");
         
-        String opc = JOptionPane.showInputDialog("Ingrese id: ");
-        rafMo.seek(0);
-        rafAux.seek(0);
+        if(fileCuIdEliminado.length() == 0){
+            IdEliminadoCu = 0;
+            rafCuIdEliminado.writeInt(IdEliminadoCu);
+        }
+        else{
+           IdEliminadoCu = rafCuIdEliminado.readInt(); 
+        }
+        
+        rafCu.seek(0);
+        rafCuAux.seek(0);
         String aux = null;
-        
         if(opc != null){
             try{
-                for(int i = 0; i < rafMo.length(); i++){
-                    aux = rafMo.readUTF();
+                for(int i = 0; i < IdCu - IdEliminadoCu; i++){
+                    aux = rafCu.readUTF();
                     if(!aux.equals(opc)){
-                        rafAux.writeUTF(aux);
-                        rafAux.writeUTF(rafMo.readUTF());
-                        rafAux.writeUTF(rafMo.readUTF());
-                        rafAux.writeUTF(rafMo.readUTF());
-                        rafAux.writeUTF(rafMo.readUTF());
+                        rafCuAux.writeUTF(aux);
+                        rafCuAux.writeUTF(rafCu.readUTF());
+                        rafCuAux.writeUTF(rafCu.readUTF());
+                        rafCuAux.writeUTF(rafCu.readUTF());
+                       // rafAux.writeUTF(rafCu.readUTF());
                     }
                     else{
-                        rafMo.readUTF();
-                        rafMo.readUTF();
-                        rafMo.readUTF();
-                        rafMo.readUTF();
-                    }        
+                        rafCu.readUTF();
+                        rafCu.readUTF();
+                        rafCu.readUTF();
+                      //  rafCu.readUTF();
+                    }
                 }   
             }catch(EOFException ex){}
-            
-            rafMo.close();
-            rafAux.close();
-            if(aux != null){
-            file.delete();
-            file = new File("Movimientos.obj");
-            fileAux.renameTo(file);
-            }
-       
+            IdEliminadoCu++;
+            rafCuIdEliminado.seek(0);
+            rafCuIdEliminado.writeInt(IdEliminadoCu);
             JOptionPane.showMessageDialog(this, "Eliminado exitosamente");
         }
         
-              
-    }
-    
-    public void editarMovimiento() throws FileNotFoundException, IOException{
-        fileMo = new File("Movimientos.obj");
-        rafMo = new RandomAccessFile(fileMo, "r");
-              
-        String buscar = JOptionPane.showInputDialog("Ingrese id: ");
-     
-        try{
-            for(int i = 0; i < rafMo.length(); i++){
-                String a = rafMo.readUTF();
-                String b = rafMo.readUTF();
-                String c = rafMo.readUTF();
-                String d = rafMo.readUTF();
-                String e = rafMo.readUTF();
-                if(buscar.equals(a)){
-                    jComboIdMov.setSelectedItem(a);
-                    txtCuenta.setText(b);
-                    jComboTipoMovimiento.setSelectedItem(c);
-                    txtMontoMov.setText(d);
-                    jDateFechaMov.setDateFormatString(e);
-                } 
-            }
-        }catch(EOFException ex){}
-        rafMo.close();
-    }
-    
-    public void guardarMovimiento() throws FileNotFoundException, IOException{
-        fileMo = new File("Movimientos.obj");
-        rafMo = new RandomAccessFile(fileMo, "r");
-        
-        fileAux = new File("MovimientosAux.obj");
-        rafAux = new RandomAccessFile(fileAux, "rw");
-        
-        String idCliente;
-        String cuenta;
-        String tipoMovimiento;
-        String monto;
-        String fecha;
-        
-        
-        idCliente = (String) jComboIdMov.getSelectedItem();
-        cuenta = txtCuenta.getText();
-        tipoMovimiento = (String) jComboTipoMovimiento.getSelectedItem();
-        monto = txtMontoMov.getText();
-        SimpleDateFormat semFormato = new SimpleDateFormat("dd/MM/yyyy");
-        fecha = semFormato.format(jDateFechaMov.getDate());
-        
-        rafMo.seek(0);
-        rafAux.seek(0);
-        String aux = null;
-        
-        try{
-            System.out.println(idCliente);
-            for(int i = 0; i < rafMo.length(); i++){
-                System.out.println(aux);
-                aux = rafMo.readUTF();
-                if(!aux.equals(idCliente)){
-                    rafAux.writeUTF(aux);
-                    rafAux.writeUTF(rafMo.readUTF());
-                    rafAux.writeUTF(rafMo.readUTF());
-                    rafAux.writeUTF(rafMo.readUTF());
-                    rafAux.writeUTF(rafMo.readUTF());
-                }
-                else{
-                    rafMo.readUTF();
-                    rafMo.readUTF();
-                    rafMo.readUTF();
-                    rafMo.readUTF();
-                }
-            }
-        }catch(EOFException ex){}
-        
-        System.out.println(aux);
-        rafAux.seek(rafMo.length());
-        rafAux.writeUTF(idCliente);
-        rafAux.writeUTF(cuenta);
-        rafAux.writeUTF(tipoMovimiento);
-        rafAux.writeUTF(monto);
-        rafAux.writeUTF(fecha);
-
-        rafMo.close();
-        rafAux.close();
-        
-        if(aux!= null){
-            file.delete();
-            file = new File("Movimientos.obj");
-            fileAux.renameTo(file);
+        rafCuId.close();
+        rafCuIdEliminado.close();
+        //rafCu.close();
+        rafCuAux.close();
+        if(aux != null){
+            fileCu.delete();
+            fileCu = new File("Cuentas.obj");
+            fileCuAux.renameTo(fileCu);
         }
-        JOptionPane.showMessageDialog(this, "Editado exitosamente");
-        cleanMovimiento();
+        
+    }
+    
+    public void addTransferencia() throws FileNotFoundException, IOException{
+        fileCu = new File("Cuentas.obj");
+        rafCu = new RandomAccessFile(fileCu, "rw");
+        
+        fileCuId = new File("IdCuentas.obj");
+        rafCuId = new RandomAccessFile(fileCuId, "rw");
+        
+        fileCuAux = new File("CuentasAux.obj");
+        rafCuAux = new RandomAccessFile(fileCuAux, "rw");
+        
+        if(fileCuId.length() == 0){
+            IdCu = 1;
+            rafCuId.writeInt(IdCu);
+        }
+        else{
+           IdCu = rafCuId.readInt(); 
+        }
+        
+        fileCuIdEliminado = new File("IdEliminadoCuentas.obj");
+        rafCuIdEliminado = new RandomAccessFile(fileCuIdEliminado, "rw");
+        
+        if(fileCuIdEliminado.length() == 0){
+            IdEliminadoCu = 0;
+            rafCuIdEliminado.writeInt(IdEliminadoCu);
+        }
+        else{
+           IdEliminadoCu = rafCuIdEliminado.readInt(); 
+        }
+        
+        String a = null, b = null, c = null, d = null, A = null, B = null, C = null, D = null;
+        String aux2 = null, aux3 = null;
+        int creada1 = 0, creada2 = 0;
+        
+        String aux = txtOrigenTra.getText();
+        String aux1 = txtDestinoTra.getText();
+        String cantidad = txtMontoTra.getText();
+        
+        Pattern x = Pattern.compile(patronClabe);
+        Pattern y = Pattern.compile(patronMonto);
+        
+        if(!x.matcher(aux).matches()){
+            JOptionPane.showMessageDialog(this, "CLABE de origen invalida");
+        }
+        else if(!x.matcher(aux1).matches()){
+            JOptionPane.showMessageDialog(this, "CLABE de destino invalida");
+        }
+        else if(!y.matcher(cantidad).matches()){
+            JOptionPane.showMessageDialog(this, "Monto invalido");
+        }
+        else{
+        
+        
+        if(aux.equals(aux1)){
+            JOptionPane.showMessageDialog(this, "La CLABE no puede ser la misma");
+        }
+        else{
+            try{
+                for(int i = 0; i < IdCu - IdEliminadoCu; i++){
+                    a = rafCu.readUTF();
+                    b = rafCu.readUTF();
+                    c = rafCu.readUTF();
+                    d = rafCu.readUTF();
+                
+                    if(aux.equals(b)){
+                        creada1 = 1;
+
+                        rafCu.seek(0);
+                        for(int j = 0; j < IdCu - IdEliminadoCu; j++){
+                            A = rafCu.readUTF();
+                            B = rafCu.readUTF();
+                            C = rafCu.readUTF();
+                            D = rafCu.readUTF();                   
+                        
+                            if(aux1.equals(B)){
+                                creada2 = 1;
+                                if(Integer.parseInt(cantidad) <= Integer.parseInt(c)){
+                                    rafCu.seek(0);
+                                    for(int k = 0; k < IdCu - IdEliminadoCu; k++){
+                                        aux2 = rafCu.readUTF();
+                                        if(!aux2.equals(a)){
+                                        
+                                            rafCuAux.writeUTF(aux2);
+                                            rafCuAux.writeUTF(rafCu.readUTF());
+                                            rafCuAux.writeUTF(rafCu.readUTF());
+                                            rafCuAux.writeUTF(rafCu.readUTF());
+                                            //rafAux.writeUTF(rafCu.readUTF());
+                                        }
+                                        else{
+                                            rafCu.readUTF();
+                                            rafCu.readUTF();
+                                            rafCu.readUTF();
+                                           // rafCu.readUTF();
+                                        }                                   
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            } catch(EOFException ex){}
+            
+            if(creada1 == 1){
+                rafCuAux.seek(rafCuAux.length());
+                rafCuAux.writeUTF(a);
+                rafCuAux.writeUTF(b);
+                rafCuAux.writeUTF(String.valueOf(Integer.parseInt(c) - Integer.parseInt(cantidad)));
+                rafCuAux.writeUTF(d);
+                rafCuAux.close();
+            }
+            
+            rafCu.close();
+            rafCuAux.close();
+            rafCuId.close();
+            rafCuIdEliminado.close();
+            
+                if(aux2 != null){
+                    fileCu.delete();
+                    fileCu = new File("Cuentas.obj");
+                    fileCuAux.renameTo(fileCu);
+                }
+                
+            fileCuAux = new File("CuentasAux.obj");
+            rafCuAux = new RandomAccessFile(fileCuAux, "rw");
+            fileCu = new File("Cuentas.obj");
+            rafCu = new RandomAccessFile(fileCu, "rw");
+            
+            try{
+                if(creada2 == 1){
+                    for(int k = 0; k < IdCu - IdEliminadoCu; k++){
+                        aux2 = rafCu.readUTF();
+                        if(!aux2.equals(A)){   
+                            rafCuAux.writeUTF(aux2);
+                            rafCuAux.writeUTF(rafCu.readUTF());
+                            rafCuAux.writeUTF(rafCu.readUTF());
+                            rafCuAux.writeUTF(rafCu.readUTF());
+                            //rafAux.writeUTF(rafCu.readUTF());
+                        }
+                        else{
+                            rafCu.readUTF();
+                            rafCu.readUTF();
+                            rafCu.readUTF();
+                             // rafCu.readUTF();
+                        }                                  
+                    }     
+                }
+            } catch(EOFException ex){}
+                
+            if(creada2== 1){
+                rafCuAux.seek(rafCuAux.length());
+                rafCuAux.writeUTF(A);
+                rafCuAux.writeUTF(B);
+                rafCuAux.writeUTF(String.valueOf(Integer.parseInt(C) + Integer.parseInt(cantidad)));
+                rafCuAux.writeUTF(D);
+            }
+            
+            rafCu.close();
+            rafCuAux.close();
+            rafCuId.close();
+            rafCuIdEliminado.close();
+             
+            if(aux2 != null){
+                fileCu.delete();
+                fileCu = new File("Cuentas.obj");
+                fileCuAux.renameTo(fileCu);
+            }
+        
+        JOptionPane.showMessageDialog(this, "Se hizo la transferencia correctamente");
+        }
+    }
+}
+    
+    public void cleanTransferencia(){
+        txtMontoTra.setText("");
+    }
+    
+    public void addDeposito() throws FileNotFoundException, IOException{
+        fileCu = new File("Cuentas.obj");
+        rafCu = new RandomAccessFile(fileCu, "rw");
+        
+        fileCuId = new File("IdCuentas.obj");
+        rafCuId = new RandomAccessFile(fileCuId, "rw");
+        
+        fileCuAux = new File("CuentasAux.obj");
+        rafCuAux = new RandomAccessFile(fileCuAux, "rw");
+        
+        if(fileCuId.length() == 0){
+            IdCu = 1;
+            rafCuId.writeInt(IdCu);
+        }
+        else{
+           IdCu = rafCuId.readInt(); 
+        }
+        
+        fileCuIdEliminado = new File("IdEliminadoCuentas.obj");
+        rafCuIdEliminado = new RandomAccessFile(fileCuIdEliminado, "rw");
+        
+        if(fileCuIdEliminado.length() == 0){
+            IdEliminadoCu = 0;
+            rafCuIdEliminado.writeInt(IdEliminadoCu);
+        }
+        else{
+           IdEliminadoCu = rafCuIdEliminado.readInt(); 
+        }
+        
+        String a = null,b = null,c = null,d = null;
+        String aux2 = null; 
+        int creada = 0;
+        String aux = txtDestinoDep.getText();
+        String cantidad = txtMontoDep.getText();
+        
+        Pattern x = Pattern.compile(patronClabe);
+        Pattern y = Pattern.compile(patronMonto);
+        
+        if(!x.matcher(aux).matches()){
+            JOptionPane.showMessageDialog(this, "CLABE invalida");
+        }
+        else if(!y.matcher(cantidad).matches()){
+            JOptionPane.showMessageDialog(this, "Monto invalido");
+        }
+        else{
+        
+        try{
+            for(int i = 0; i < IdCu - IdEliminadoCu; i++){
+                
+                a = rafCu.readUTF();
+                b = rafCu.readUTF();
+                c = rafCu.readUTF();
+                d = rafCu.readUTF();
+                
+                if(aux.equals(b)){
+                    creada = 1;
+                    for(int j = 0; j < IdCu - IdEliminadoCu; j++){
+                        aux2 = rafCu.readUTF();
+                        if(!aux2.equals(a)){
+                            rafCuAux.writeUTF(aux2);
+                            rafCuAux.writeUTF(rafCu.readUTF());
+                            rafCuAux.writeUTF(rafCu.readUTF());
+                            rafCuAux.writeUTF(rafCu.readUTF());
+                            //rafAux.writeUTF(rafCu.readUTF());
+                        }
+                        else{
+                            rafCu.readUTF();
+                            rafCu.readUTF();
+                            rafCu.readUTF();
+                           // rafCu.readUTF();
+                        }
+                    }
+                }
+            }
+        }catch(EOFException ex){}
+            
+        
+  
+        if(creada == 1){
+            aux2 = "hola";
+                System.out.println(aux2);
+                
+                rafCuAux.seek(rafCuAux.length());
+                rafCuAux.writeUTF(a);
+                rafCuAux.writeUTF(b);
+                rafCuAux.writeUTF(String.valueOf(Integer.parseInt(c) + Integer.parseInt(cantidad)));
+                rafCuAux.writeUTF(d);
+        }
+
+                rafCu.close();
+                rafCuAux.close();
+                rafCuId.close();
+                rafCuIdEliminado.close();
+                
+                if(aux2 != null){
+                    fileCu.delete();
+                    fileCu = new File("Cuentas.obj");
+                    fileCuAux.renameTo(fileCu);
+                }
+            
+       
+        JOptionPane.showMessageDialog(this, "Se hizo el deposito correctamente");
+        }
     }
     
     public void generarReporte(Document documento) throws IOException{
@@ -1021,6 +1073,8 @@ public class JFrameBanco extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jPanel5 = new javax.swing.JPanel();
+        jSplitPane2 = new javax.swing.JSplitPane();
         jTabbedPane1 = new javax.swing.JTabbedPane();
         jPanel1 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
@@ -1046,11 +1100,9 @@ public class JFrameBanco extends javax.swing.JFrame {
         jPanel2 = new javax.swing.JPanel();
         jLabel9 = new javax.swing.JLabel();
         jLabel10 = new javax.swing.JLabel();
-        jLabel11 = new javax.swing.JLabel();
         jLabel12 = new javax.swing.JLabel();
         jLabel13 = new javax.swing.JLabel();
         txtClabe = new javax.swing.JTextField();
-        jComboTipoCuenta = new javax.swing.JComboBox<>();
         jComboIdCliente = new javax.swing.JComboBox<>();
         txtMonto = new javax.swing.JTextField();
         btnAgregarCuenta = new javax.swing.JButton();
@@ -1060,22 +1112,6 @@ public class JFrameBanco extends javax.swing.JFrame {
         btnGuardarCuenta = new javax.swing.JButton();
         jLabel22 = new javax.swing.JLabel();
         dateCuentas = new com.toedter.calendar.JDateChooser();
-        jPanel3 = new javax.swing.JPanel();
-        jLabel14 = new javax.swing.JLabel();
-        jLabel15 = new javax.swing.JLabel();
-        jLabel16 = new javax.swing.JLabel();
-        jLabel17 = new javax.swing.JLabel();
-        jLabel18 = new javax.swing.JLabel();
-        jComboTipoMovimiento = new javax.swing.JComboBox<>();
-        txtMontoMov = new javax.swing.JTextField();
-        txtCuenta = new javax.swing.JTextField();
-        jComboIdMov = new javax.swing.JComboBox<>();
-        btnAgregarMov = new javax.swing.JButton();
-        btnCancelarMov = new javax.swing.JButton();
-        btnEliminarMov = new javax.swing.JButton();
-        btnGuardarMov = new javax.swing.JButton();
-        btnEditarMov = new javax.swing.JButton();
-        jDateFechaMov = new com.toedter.calendar.JDateChooser();
         jPanel4 = new javax.swing.JPanel();
         jLabel19 = new javax.swing.JLabel();
         jComboCuentaRe = new javax.swing.JComboBox<>();
@@ -1084,6 +1120,38 @@ public class JFrameBanco extends javax.swing.JFrame {
         btnGenerar = new javax.swing.JButton();
         jDateFechaInicio = new com.toedter.calendar.JDateChooser();
         jDateFechaFin = new com.toedter.calendar.JDateChooser();
+        jTabbedPane2 = new javax.swing.JTabbedPane();
+        jPanel6 = new javax.swing.JPanel();
+        jLabel17 = new javax.swing.JLabel();
+        jDateFechaTra = new com.toedter.calendar.JDateChooser();
+        txtMontoTra = new javax.swing.JTextField();
+        btnCancelarTra = new javax.swing.JButton();
+        jLabel14 = new javax.swing.JLabel();
+        jLabel15 = new javax.swing.JLabel();
+        btnGuardarTra = new javax.swing.JButton();
+        jLabel16 = new javax.swing.JLabel();
+        txtOrigenTra = new javax.swing.JTextField();
+        txtDestinoTra = new javax.swing.JTextField();
+        jPanel7 = new javax.swing.JPanel();
+        jLabel24 = new javax.swing.JLabel();
+        jDateFechaDep = new com.toedter.calendar.JDateChooser();
+        txtMontoDep = new javax.swing.JTextField();
+        btnCancelarDep = new javax.swing.JButton();
+        jLabel26 = new javax.swing.JLabel();
+        jLabel27 = new javax.swing.JLabel();
+        btnGuardarDep = new javax.swing.JButton();
+        txtDestinoDep = new javax.swing.JTextField();
+
+        javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
+        jPanel5.setLayout(jPanel5Layout);
+        jPanel5Layout.setHorizontalGroup(
+            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 100, Short.MAX_VALUE)
+        );
+        jPanel5Layout.setVerticalGroup(
+            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 100, Short.MAX_VALUE)
+        );
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -1231,13 +1299,9 @@ public class JFrameBanco extends javax.swing.JFrame {
 
         jLabel10.setText("Clave:");
 
-        jLabel11.setText("Tipo de cuenta:");
-
         jLabel12.setText("Monto:");
 
         jLabel13.setText("Fecha:");
-
-        jComboTipoCuenta.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Deposito", "Ahorro", "Debito" }));
 
         jComboIdCliente.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -1289,15 +1353,14 @@ public class JFrameBanco extends javax.swing.JFrame {
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGap(53, 53, 53)
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel2Layout.createSequentialGroup()
-                                .addGap(24, 24, 24)
+                                .addGap(77, 77, 77)
                                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                                     .addComponent(jLabel9)
                                     .addComponent(jLabel10)))
-                            .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                .addComponent(jLabel11)
+                            .addGroup(jPanel2Layout.createSequentialGroup()
+                                .addGap(94, 94, 94)
                                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(jLabel13)
                                     .addComponent(jLabel12))))
@@ -1306,7 +1369,6 @@ public class JFrameBanco extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(txtClabe)
-                            .addComponent(jComboTipoCuenta, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(jComboIdCliente, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(txtMonto)
                             .addComponent(dateCuentas, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
@@ -1321,7 +1383,7 @@ public class JFrameBanco extends javax.swing.JFrame {
                         .addComponent(btnEditarCuenta)
                         .addGap(18, 18, 18)
                         .addComponent(btnGuardarCuenta)))
-                .addContainerGap(85, Short.MAX_VALUE))
+                .addContainerGap(89, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1334,11 +1396,7 @@ public class JFrameBanco extends javax.swing.JFrame {
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel10)
                     .addComponent(txtClabe, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel11)
-                    .addComponent(jComboTipoCuenta, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
+                .addGap(50, 50, 50)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel12)
                     .addComponent(txtMonto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -1347,7 +1405,7 @@ public class JFrameBanco extends javax.swing.JFrame {
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(jLabel13)
                     .addComponent(dateCuentas, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 75, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 81, Short.MAX_VALUE)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnAgregarCuenta)
                     .addComponent(btnCancelarCuenta)
@@ -1358,126 +1416,6 @@ public class JFrameBanco extends javax.swing.JFrame {
         );
 
         jTabbedPane1.addTab("Cuentas", jPanel2);
-
-        jLabel14.setText("ID:");
-
-        jLabel15.setText("Fecha:");
-
-        jLabel16.setText("Tipo de movimiento:");
-
-        jLabel17.setText("Monto:");
-
-        jLabel18.setText("Cuenta:");
-
-        jComboTipoMovimiento.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Deposito", "Cheque" }));
-
-        btnAgregarMov.setText("Agregar");
-        btnAgregarMov.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnAgregarMovActionPerformed(evt);
-            }
-        });
-
-        btnCancelarMov.setText("Cancelar");
-        btnCancelarMov.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnCancelarMovActionPerformed(evt);
-            }
-        });
-
-        btnEliminarMov.setText("Eliminar");
-        btnEliminarMov.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnEliminarMovActionPerformed(evt);
-            }
-        });
-
-        btnGuardarMov.setText("Guardar");
-        btnGuardarMov.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnGuardarMovActionPerformed(evt);
-            }
-        });
-
-        btnEditarMov.setText("Editar");
-        btnEditarMov.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnEditarMovActionPerformed(evt);
-            }
-        });
-
-        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
-        jPanel3.setLayout(jPanel3Layout);
-        jPanel3Layout.setHorizontalGroup(
-            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel3Layout.createSequentialGroup()
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
-                                .addGap(140, 140, 140)
-                                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel14, javax.swing.GroupLayout.Alignment.TRAILING)
-                                    .addComponent(jLabel15, javax.swing.GroupLayout.Alignment.TRAILING)
-                                    .addComponent(jLabel17, javax.swing.GroupLayout.Alignment.TRAILING)
-                                    .addComponent(jLabel18, javax.swing.GroupLayout.Alignment.TRAILING)))
-                            .addGroup(jPanel3Layout.createSequentialGroup()
-                                .addGap(80, 80, 80)
-                                .addComponent(jLabel16)))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jComboTipoMovimiento, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(txtMontoMov)
-                            .addComponent(txtCuenta)
-                            .addComponent(jDateFechaMov, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jComboIdMov, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addGap(61, 61, 61)
-                        .addComponent(btnAgregarMov)
-                        .addGap(18, 18, 18)
-                        .addComponent(btnCancelarMov)
-                        .addGap(18, 18, 18)
-                        .addComponent(btnEliminarMov)
-                        .addGap(14, 14, 14)
-                        .addComponent(btnEditarMov)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(btnGuardarMov)))
-                .addContainerGap(105, Short.MAX_VALUE))
-        );
-        jPanel3Layout.setVerticalGroup(
-            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel3Layout.createSequentialGroup()
-                .addGap(46, 46, 46)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel14)
-                    .addComponent(jComboIdMov, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(14, 14, 14)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jLabel15)
-                    .addComponent(jDateFechaMov, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(20, 20, 20)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel16)
-                    .addComponent(jComboTipoMovimiento, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel17)
-                    .addComponent(txtMontoMov, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel18)
-                    .addComponent(txtCuenta, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 79, Short.MAX_VALUE)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnAgregarMov)
-                    .addComponent(btnCancelarMov)
-                    .addComponent(btnEliminarMov)
-                    .addComponent(btnGuardarMov)
-                    .addComponent(btnEditarMov))
-                .addGap(63, 63, 63))
-        );
-
-        jTabbedPane1.addTab("Movimientos", jPanel3);
 
         jLabel19.setText("Tipo de cuenta:");
 
@@ -1514,7 +1452,7 @@ public class JFrameBanco extends javax.swing.JFrame {
                     .addGroup(jPanel4Layout.createSequentialGroup()
                         .addGap(216, 216, 216)
                         .addComponent(btnGenerar)))
-                .addContainerGap(208, Short.MAX_VALUE))
+                .addContainerGap(233, Short.MAX_VALUE))
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1538,6 +1476,161 @@ public class JFrameBanco extends javax.swing.JFrame {
 
         jTabbedPane1.addTab("Reportes", jPanel4);
 
+        jLabel17.setText("Monto:");
+
+        btnCancelarTra.setText("Cancelar");
+        btnCancelarTra.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCancelarTraActionPerformed(evt);
+            }
+        });
+
+        jLabel14.setText("Id Cuenta Origen:");
+
+        jLabel15.setText("Fecha:");
+
+        btnGuardarTra.setText("Guardar");
+        btnGuardarTra.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnGuardarTraActionPerformed(evt);
+            }
+        });
+
+        jLabel16.setText("Id Cuenta Destino:");
+
+        txtDestinoTra.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtDestinoTraActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
+        jPanel6.setLayout(jPanel6Layout);
+        jPanel6Layout.setHorizontalGroup(
+            jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel6Layout.createSequentialGroup()
+                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel6Layout.createSequentialGroup()
+                        .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel6Layout.createSequentialGroup()
+                                .addGap(145, 145, 145)
+                                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel14, javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel6Layout.createSequentialGroup()
+                                        .addComponent(jLabel15)
+                                        .addGap(1, 1, 1))))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel6Layout.createSequentialGroup()
+                                .addContainerGap()
+                                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel17, javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(jLabel16, javax.swing.GroupLayout.Alignment.TRAILING))))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(txtMontoTra, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jDateFechaTra, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(txtDestinoTra, javax.swing.GroupLayout.DEFAULT_SIZE, 248, Short.MAX_VALUE)
+                            .addComponent(txtOrigenTra)))
+                    .addGroup(jPanel6Layout.createSequentialGroup()
+                        .addGap(152, 152, 152)
+                        .addComponent(btnGuardarTra)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(btnCancelarTra)))
+                .addContainerGap(78, Short.MAX_VALUE))
+        );
+        jPanel6Layout.setVerticalGroup(
+            jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel6Layout.createSequentialGroup()
+                .addGap(45, 45, 45)
+                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel14)
+                    .addComponent(txtOrigenTra, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel16)
+                    .addComponent(txtDestinoTra, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(8, 8, 8)
+                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(txtMontoTra, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel17))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jLabel15)
+                    .addComponent(jDateFechaTra, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 117, Short.MAX_VALUE)
+                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnCancelarTra)
+                    .addComponent(btnGuardarTra))
+                .addGap(63, 63, 63))
+        );
+
+        jTabbedPane2.addTab("Transferecias", jPanel6);
+
+        jLabel24.setText("Monto:");
+
+        btnCancelarDep.setText("Cancelar");
+        btnCancelarDep.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCancelarDepActionPerformed(evt);
+            }
+        });
+
+        jLabel26.setText("CLABE cuenta destino :");
+
+        jLabel27.setText("Fecha:");
+
+        btnGuardarDep.setText("Guardar");
+        btnGuardarDep.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnGuardarDepActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel7Layout = new javax.swing.GroupLayout(jPanel7);
+        jPanel7.setLayout(jPanel7Layout);
+        jPanel7Layout.setHorizontalGroup(
+            jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel7Layout.createSequentialGroup()
+                .addGap(142, 142, 142)
+                .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jLabel26)
+                    .addComponent(jLabel27)
+                    .addComponent(jLabel24)
+                    .addComponent(btnGuardarDep))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addComponent(btnCancelarDep)
+                        .addComponent(txtMontoDep)
+                        .addComponent(jDateFechaDep, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(txtDestinoDep, javax.swing.GroupLayout.PREFERRED_SIZE, 217, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(87, Short.MAX_VALUE))
+        );
+        jPanel7Layout.setVerticalGroup(
+            jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel7Layout.createSequentialGroup()
+                .addGap(48, 48, 48)
+                .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(txtDestinoDep, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel26, javax.swing.GroupLayout.PREFERRED_SIZE, 14, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(54, 54, 54)
+                .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jDateFechaDep, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel27))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel24)
+                    .addComponent(txtMontoDep, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 87, Short.MAX_VALUE)
+                .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnCancelarDep)
+                    .addComponent(btnGuardarDep))
+                .addGap(63, 63, 63))
+        );
+
+        jTabbedPane2.addTab("Depositos", jPanel7);
+
+        jTabbedPane1.addTab("Moviminetos", jTabbedPane2);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -1554,11 +1647,79 @@ public class JFrameBanco extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void btnAgregarClienteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAgregarClienteActionPerformed
+    private void btnGuardarTraActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarTraActionPerformed
         try {
-            addCliente();
+            addTransferencia();
+        } catch (IOException ex) {
+            Logger.getLogger(JFrameBanco.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_btnGuardarTraActionPerformed
+
+    private void btnCancelarTraActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelarTraActionPerformed
+
+    }//GEN-LAST:event_btnCancelarTraActionPerformed
+
+    private void btnGuardarDepActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarDepActionPerformed
+        try {
+            addDeposito();
+        } catch (IOException ex) {
+            Logger.getLogger(JFrameBanco.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_btnGuardarDepActionPerformed
+
+    private void btnCancelarDepActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelarDepActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnCancelarDepActionPerformed
+
+    private void btnGenerarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGenerarActionPerformed
+        Document doc = new Document(PageSize.A4);
+        try {
+            generarReporte(doc);
+        } catch (IOException ex) {
+            doc.close();
+            System.out.println("561No se pudo crear el pdf");
+        }
+    }//GEN-LAST:event_btnGenerarActionPerformed
+
+    private void btnGuardarCuentaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarCuentaActionPerformed
+        try {
+            guardarCuenta();
         } catch (IOException ex) {}
-    }//GEN-LAST:event_btnAgregarClienteActionPerformed
+    }//GEN-LAST:event_btnGuardarCuentaActionPerformed
+
+    private void btnEditarCuentaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditarCuentaActionPerformed
+        try {
+            editarCuenta();
+        } catch (IOException ex) {}
+    }//GEN-LAST:event_btnEditarCuentaActionPerformed
+
+    private void btnEliminarCuentaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarCuentaActionPerformed
+        
+        String opc = JOptionPane.showInputDialog("Ingrese Id a eliminar");
+        try {
+            eliminarCuenta(opc);
+        } catch (IOException ex) {}
+    }//GEN-LAST:event_btnEliminarCuentaActionPerformed
+
+    private void btnCancelarCuentaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelarCuentaActionPerformed
+        cleanCuenta();
+    }//GEN-LAST:event_btnCancelarCuentaActionPerformed
+
+    private void btnAgregarCuentaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAgregarCuentaActionPerformed
+        try {
+            addCuenta();
+        } catch (IOException ex) {}
+    }//GEN-LAST:event_btnAgregarCuentaActionPerformed
+
+    private void jComboIdClienteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboIdClienteActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jComboIdClienteActionPerformed
+
+    private void btnEditarClienteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditarClienteActionPerformed
+        try {
+            editarCliente();
+        } catch (IOException ex) {}
+    }//GEN-LAST:event_btnEditarClienteActionPerformed
 
     private void btnCancelarClienteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelarClienteActionPerformed
         try {
@@ -1572,85 +1733,19 @@ public class JFrameBanco extends javax.swing.JFrame {
         } catch (IOException ex) {}
     }//GEN-LAST:event_btnEliminarClienteActionPerformed
 
-    private void btnEditarClienteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditarClienteActionPerformed
+    private void btnAgregarClienteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAgregarClienteActionPerformed
         try {
-            editarCliente();
+            addCliente();
         } catch (IOException ex) {}
-    }//GEN-LAST:event_btnEditarClienteActionPerformed
-
-    private void btnAgregarCuentaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAgregarCuentaActionPerformed
-        try {
-            addCuenta();
-        } catch (IOException ex) {}
-    }//GEN-LAST:event_btnAgregarCuentaActionPerformed
-
-    private void btnCancelarCuentaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelarCuentaActionPerformed
-        cleanCuenta();
-    }//GEN-LAST:event_btnCancelarCuentaActionPerformed
-
-    private void btnEliminarCuentaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarCuentaActionPerformed
-        try {
-            eliminarCuenta();
-        } catch (IOException ex) {}
-    }//GEN-LAST:event_btnEliminarCuentaActionPerformed
-
-    private void btnEditarCuentaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditarCuentaActionPerformed
-        try {
-            editarCuenta();
-        } catch (IOException ex) {}
-    }//GEN-LAST:event_btnEditarCuentaActionPerformed
-
-    private void btnGuardarCuentaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarCuentaActionPerformed
-        try {
-            guardarCuenta();
-        } catch (IOException ex) {}
-    }//GEN-LAST:event_btnGuardarCuentaActionPerformed
-
-    private void btnAgregarMovActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAgregarMovActionPerformed
-       try {
-            addMovimiento();
-        } catch (IOException ex) {}
-    }//GEN-LAST:event_btnAgregarMovActionPerformed
-
-    private void btnCancelarMovActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelarMovActionPerformed
-        cleanMovimiento();
-    }//GEN-LAST:event_btnCancelarMovActionPerformed
-
-    private void btnEliminarMovActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarMovActionPerformed
-      try {
-            eliminarMovimiento();
-        } catch (IOException ex) {}
-    }//GEN-LAST:event_btnEliminarMovActionPerformed
-
-    private void btnEditarMovActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditarMovActionPerformed
-       try {
-            editarMovimiento();
-        } catch (IOException ex) {}
-    }//GEN-LAST:event_btnEditarMovActionPerformed
-
-    private void btnGuardarMovActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarMovActionPerformed
-        try {
-            guardarMovimiento();
-        } catch (IOException ex) {}
-    }//GEN-LAST:event_btnGuardarMovActionPerformed
-
-    private void btnGenerarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGenerarActionPerformed
-        Document doc = new Document(PageSize.A4);
-        try {
-            generarReporte(doc);
-        } catch (IOException ex) {
-            doc.close();
-            System.out.println("561No se pudo crear el pdf");
-        }
-    }//GEN-LAST:event_btnGenerarActionPerformed
+    }//GEN-LAST:event_btnAgregarClienteActionPerformed
 
     private void txtIdClienteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtIdClienteActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_txtIdClienteActionPerformed
 
-    private void jComboIdClienteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboIdClienteActionPerformed
+    private void txtDestinoTraActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtDestinoTraActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jComboIdClienteActionPerformed
+    }//GEN-LAST:event_txtDestinoTraActionPerformed
 
     /**
      * @param args the command line arguments
@@ -1692,44 +1787,42 @@ public class JFrameBanco extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAgregarCliente;
     private javax.swing.JButton btnAgregarCuenta;
-    private javax.swing.JButton btnAgregarMov;
     private javax.swing.JButton btnCancelarCliente;
     private javax.swing.JButton btnCancelarCuenta;
-    private javax.swing.JButton btnCancelarMov;
+    private javax.swing.JButton btnCancelarDep;
+    private javax.swing.JButton btnCancelarTra;
     private javax.swing.JButton btnEditarCliente;
     private javax.swing.JButton btnEditarCuenta;
-    private javax.swing.JButton btnEditarMov;
     private javax.swing.JButton btnEliminarCliente;
     private javax.swing.JButton btnEliminarCuenta;
-    private javax.swing.JButton btnEliminarMov;
     private javax.swing.JButton btnGenerar;
     private javax.swing.JButton btnGuardarCuenta;
-    private javax.swing.JButton btnGuardarMov;
+    private javax.swing.JButton btnGuardarDep;
+    private javax.swing.JButton btnGuardarTra;
     private com.toedter.calendar.JDateChooser dateCuentas;
     private javax.swing.JComboBox<String> jComboCuentaRe;
     private javax.swing.JComboBox<String> jComboEstado;
     private javax.swing.JComboBox<String> jComboIdCliente;
-    private javax.swing.JComboBox<String> jComboIdMov;
-    private javax.swing.JComboBox<String> jComboTipoCuenta;
-    private javax.swing.JComboBox<String> jComboTipoMovimiento;
+    private com.toedter.calendar.JDateChooser jDateFechaDep;
     private com.toedter.calendar.JDateChooser jDateFechaFin;
     private com.toedter.calendar.JDateChooser jDateFechaInicio;
-    private com.toedter.calendar.JDateChooser jDateFechaMov;
+    private com.toedter.calendar.JDateChooser jDateFechaTra;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
-    private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel14;
     private javax.swing.JLabel jLabel15;
     private javax.swing.JLabel jLabel16;
     private javax.swing.JLabel jLabel17;
-    private javax.swing.JLabel jLabel18;
     private javax.swing.JLabel jLabel19;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel20;
     private javax.swing.JLabel jLabel21;
     private javax.swing.JLabel jLabel22;
+    private javax.swing.JLabel jLabel24;
+    private javax.swing.JLabel jLabel26;
+    private javax.swing.JLabel jLabel27;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
@@ -1739,19 +1832,26 @@ public class JFrameBanco extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
-    private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
+    private javax.swing.JPanel jPanel5;
+    private javax.swing.JPanel jPanel6;
+    private javax.swing.JPanel jPanel7;
+    private javax.swing.JSplitPane jSplitPane2;
     private javax.swing.JTabbedPane jTabbedPane1;
+    private javax.swing.JTabbedPane jTabbedPane2;
     private javax.swing.JTextField txtApeMaterno;
     private javax.swing.JTextField txtApePaterno;
     private javax.swing.JTextField txtClabe;
-    private javax.swing.JTextField txtCuenta;
+    private javax.swing.JTextField txtDestinoDep;
+    private javax.swing.JTextField txtDestinoTra;
     private javax.swing.JTextField txtDireccion;
     private javax.swing.JTextField txtEmail;
     private javax.swing.JTextField txtIdCliente;
     private javax.swing.JTextField txtMonto;
-    private javax.swing.JTextField txtMontoMov;
+    private javax.swing.JTextField txtMontoDep;
+    private javax.swing.JTextField txtMontoTra;
     private javax.swing.JTextField txtNombre;
+    private javax.swing.JTextField txtOrigenTra;
     private javax.swing.JTextField txtTelefono;
     // End of variables declaration//GEN-END:variables
 }

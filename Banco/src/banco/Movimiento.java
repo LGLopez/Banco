@@ -12,14 +12,12 @@ package banco;
 public class Movimiento {
     private String idCliente;
     private String cuenta;
-    private String tipoMovimiento;
     private String monto;
     private String fecha;
     
-    public Movimiento(String idCliente, String cuenta, String tipoMovimiento, String monto, String fecha) {
+    public Movimiento(String idCliente, String cuenta, String monto, String fecha) {
         this.idCliente = idCliente;
         this.cuenta = cuenta;
-        this.tipoMovimiento = tipoMovimiento;
         this.monto = monto;
         this.fecha = fecha;
     }
@@ -42,14 +40,6 @@ public class Movimiento {
 
     public void setCuenta(String cuenta) {
         this.cuenta = cuenta;
-    }
-
-    public String getTipoMovimiento() {
-        return tipoMovimiento;
-    }
-
-    public void setTipoMovimiento(String tipoMovimiento) {
-        this.tipoMovimiento = tipoMovimiento;
     }
 
     public String getMonto() {
