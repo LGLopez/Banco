@@ -742,8 +742,8 @@ public class JFrameBanco extends javax.swing.JFrame {
         rafMov = new RandomAccessFile(fileMov, "rw");
         
         if(fileMov.length() == 0){
-            rafMov.writeInt(0);
             sizeOfMov = 0;
+            rafMov.writeInt(sizeOfMov);
         }
         else{
             sizeOfMov = rafMov.readInt();
@@ -857,6 +857,15 @@ public class JFrameBanco extends javax.swing.JFrame {
             rafCuId.close();
             rafCuIdEliminado.close();
             
+            rafMov.seek(0);
+            sizeOfMov++;
+            rafMov.writeInt(sizeOfMov);
+            rafMov.seek(rafMov.length());
+            rafMov.writeUTF(aux);
+            rafMov.writeUTF(aux1);
+            rafMov.writeUTF(cantidad);
+            rafMov.writeUTF(fechaMov);
+
                 if(aux2 != null){
                     fileCu.delete();
                     fileCu = new File("Cuentas.obj");
@@ -896,14 +905,6 @@ public class JFrameBanco extends javax.swing.JFrame {
                 rafCuAux.writeUTF(String.valueOf(Integer.parseInt(C) + Integer.parseInt(cantidad)));
                 rafCuAux.writeUTF(D);
                 
-                rafMov.seek(0);
-                sizeOfMov++;
-                rafMov.writeInt(sizeOfMov);
-                rafMov.seek(rafMov.length());
-                rafMov.writeUTF(aux);
-                rafMov.writeUTF(aux1);
-                rafMov.writeUTF(cantidad);
-                rafMov.writeUTF(fechaMov);
             }
             rafMov.close();
             rafCu.close();
@@ -1020,7 +1021,13 @@ public class JFrameBanco extends javax.swing.JFrame {
             }
         }catch(EOFException ex){}
             
-        
+        rafDe.seek(0);
+        sizeOfDe++;
+        rafDe.writeInt(sizeOfDe);
+        rafDe.seek(rafDe.length());
+        rafDe.writeUTF(aux);
+        rafDe.writeUTF(cantidad);
+        rafDe.writeUTF(fechaDe);
   
         if(creada == 1){
             aux2 = "hola";
@@ -1032,13 +1039,6 @@ public class JFrameBanco extends javax.swing.JFrame {
                 rafCuAux.writeUTF(String.valueOf(Integer.parseInt(c) + Integer.parseInt(cantidad)));
                 rafCuAux.writeUTF(d);
                 
-                rafDe.seek(0);
-                sizeOfDe++;
-                rafDe.writeInt(sizeOfDe);
-                rafDe.seek(rafDe.length());
-                rafDe.writeUTF(aux);
-                rafDe.writeUTF(cantidad);
-                rafDe.writeUTF(fechaDe);
         }
                 rafDe.close();
                 rafCu.close();
@@ -1057,11 +1057,13 @@ public class JFrameBanco extends javax.swing.JFrame {
         }
     }
     
-    public void generarReporte(Document documento) throws IOException{
-        fileCu = new File("Cuentas.obj");
-        rafCu = new RandomAccessFile(fileCu, "r");
+    public void generarReporte(Document documento, String tipoMovimiento) throws IOException{
+        fileMov = new File("Movimientos.obj");
+        rafMov = new RandomAccessFile(fileMov, "r");
         
-        rafCu.seek(0);
+        rafMov.seek(0);
+        int sizeOfMov = rafMov.readInt();
+        boolean estaEscrito = false, fechaCorrecta = false;
         
         Date dInicio = jDateFechaInicio.getDate();
         Date dFinal = jDateFechaFin.getDate();
@@ -1073,44 +1075,84 @@ public class JFrameBanco extends javax.swing.JFrame {
         
         String fechaStringInicio = formatoFecha.format(dInicio);
         String fechaStringFinal = formatoFecha.format(dFinal);
-        //String paraDocumento = fechaStringInicio + "-" + fechaStringFinal + ".pdf";
         
-        //Document documento = new Document(PageSize.A4);
         documento.addAuthor("Banco el cerdin");
         documento.addTitle("Reportes");
         
+        if(Integer.parseInt(fechaStringInicio.substring(6,10)) > Integer.parseInt(fechaStringFinal.substring(6, 10))){
+            JOptionPane.showMessageDialog(this, "No hay un rango correcto de fechas(Año).");
+            return;
+        }
+        else{
+            fechaCorrecta = true;
+        }
+        
+        if(Integer.parseInt(fechaStringInicio.substring(3, 5)) > Integer.parseInt(fechaStringFinal.substring(3, 5)) && !fechaCorrecta){
+            JOptionPane.showMessageDialog(this, "No hay un rango correcto de fechas(Mes).");
+            return;
+        }
+        else{
+            fechaCorrecta = true;
+        }
+        
+        if(Integer.parseInt(fechaStringInicio.substring(0, 2)) > Integer.parseInt(fechaStringFinal.substring(0, 2)) && !fechaCorrecta){
+            JOptionPane.showMessageDialog(this, "No hay un rango correcto de fechas(Dia).");
+            return;
+        }
+        
         try {
-            PdfWriter.getInstance(documento, new FileOutputStream("reportes.pdf"));
+            PdfWriter.getInstance(documento, new FileOutputStream("Reportes.pdf"));
             documento.open();
                     
-            for(int i =0; i<rafCu.length(); i++){
-                String cuentaIdCliente = rafCu.readUTF();
-                String cuentaClabe = rafCu.readUTF();
-                String cuentaTipo = rafCu.readUTF();
-                String cuentaMonto = rafCu.readUTF();
-                String fechaDocumento = rafCu.readUTF();
+            for(int i =0; i<sizeOfMov; i++){
+                boolean movimientoImpreso = false;
+                
+                String envia = rafMov.readUTF();
+                String recibe = rafMov.readUTF();
+                String cantidad = rafMov.readUTF();
+                String fechaDocumento = rafMov.readUTF();
+                
                 String revisarDia = fechaDocumento.substring(0,2);
                 String revisarMes = fechaDocumento.substring(3,5);
                 String revisarAnio = fechaDocumento.substring(6,10);
                 
                 if(Integer.parseInt(fechaStringInicio.substring(6, 10)) < Integer.parseInt(revisarAnio) && Integer.parseInt(fechaStringFinal.substring(6,10)) > Integer.parseInt(revisarAnio)){
-                    
-                    documento.add(new Paragraph(cuentaIdCliente));
+                    estaEscrito = true;
+                    movimientoImpreso = true;
+                    documento.add(new Paragraph("Cuenta origen: "+envia));
                     documento.add(Chunk.NEWLINE);
-                    documento.add(new Paragraph(cuentaClabe));
+                    documento.add(new Paragraph("Cuenta destino: "+recibe));
                     documento.add(Chunk.NEWLINE);
-                    documento.add(new Paragraph(cuentaTipo));
+                    documento.add(new Paragraph("Cantidad depositada: "+cantidad));
                     documento.add(Chunk.NEWLINE);
-                    documento.add(new Paragraph(cuentaMonto));
+                    documento.add(new Paragraph("Fecha del movimiento: "+fechaDocumento));
+                    documento.add(Chunk.NEWLINE);
+                    documento.add(Chunk.NEWLINE);
+                }
+                
+                if(Integer.parseInt(fechaStringInicio.substring(3, 5)) < Integer.parseInt(revisarMes) && Integer.parseInt(fechaStringFinal.substring(3, 5)) > Integer.parseInt(revisarMes) && !movimientoImpreso){
+                    estaEscrito = true;
+                    movimientoImpreso = true;
+                    documento.add(new Paragraph("Cuenta origen: "+envia));
+                    documento.add(Chunk.NEWLINE);
+                    documento.add(new Paragraph("Cuenta destino: "+recibe));
+                    documento.add(Chunk.NEWLINE);
+                    documento.add(new Paragraph("Cantidad depositada: "+cantidad));
+                    documento.add(Chunk.NEWLINE);
+                    documento.add(new Paragraph("Fecha del movimiento: "+fechaDocumento));
+                    documento.add(Chunk.NEWLINE);
                     documento.add(Chunk.NEWLINE);
                 }
             }
-            
+            if(!estaEscrito){
+            documento.add(new Paragraph("Ningun movimiento sucedio en esa fecha"));
+            }
         } catch (DocumentException ex) {
-            documento.close();
+            //documento.close();
             System.out.println("Error al crear el PDF");
         }
         
+        rafMov.close();
         documento.close();
     }
    
@@ -1470,7 +1512,7 @@ public class JFrameBanco extends javax.swing.JFrame {
 
         jLabel19.setText("Tipo de cuenta:");
 
-        jComboCuentaRe.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Cuentas" }));
+        jComboCuentaRe.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Transferencias", "Depositos" }));
 
         jLabel20.setText("Fecha inicio:");
 
@@ -1503,7 +1545,7 @@ public class JFrameBanco extends javax.swing.JFrame {
                     .addGroup(jPanel4Layout.createSequentialGroup()
                         .addGap(216, 216, 216)
                         .addComponent(btnGenerar)))
-                .addContainerGap(233, Short.MAX_VALUE))
+                .addContainerGap(217, Short.MAX_VALUE))
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1724,8 +1766,10 @@ public class JFrameBanco extends javax.swing.JFrame {
 
     private void btnGenerarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGenerarActionPerformed
         Document doc = new Document(PageSize.A4);
+        String tipoCuenta = jComboCuentaRe.getSelectedItem().toString();
+        
         try {
-            generarReporte(doc);
+            generarReporte(doc, tipoCuenta);
         } catch (IOException ex) {
             doc.close();
             System.out.println("561No se pudo crear el pdf");

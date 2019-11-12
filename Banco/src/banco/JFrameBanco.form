@@ -497,7 +497,7 @@
                               <Component id="btnGenerar" min="-2" max="-2" attributes="0"/>
                           </Group>
                       </Group>
-                      <EmptySpace pref="233" max="32767" attributes="0"/>
+                      <EmptySpace pref="217" max="32767" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -535,8 +535,9 @@
             <Component class="javax.swing.JComboBox" name="jComboCuentaRe">
               <Properties>
                 <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
-                  <StringArray count="1">
-                    <StringItem index="0" value="Cuentas"/>
+                  <StringArray count="2">
+                    <StringItem index="0" value="Transferencias"/>
+                    <StringItem index="1" value="Depositos"/>
                   </StringArray>
                 </Property>
               </Properties>
