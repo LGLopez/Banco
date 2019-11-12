@@ -942,12 +942,13 @@ public class JFrameBanco extends javax.swing.JFrame {
         fileCuAux = new File("CuentasAux.obj");
         rafCuAux = new RandomAccessFile(fileCuAux, "rw");
         
+        rafDe.seek(0);
         if(fileDe.length() == 0){
             rafDe.writeInt(0);
             sizeOfDe = 0;
         }
         else{
-            sizeOfDe = rafMov.readInt();
+            sizeOfDe = rafDe.readInt();
         }
         
         if(fileCuId.length() == 0){
@@ -1058,13 +1059,6 @@ public class JFrameBanco extends javax.swing.JFrame {
     }
     
     public void generarReporte(Document documento, String tipoMovimiento) throws IOException{
-        fileMov = new File("Movimientos.obj");
-        rafMov = new RandomAccessFile(fileMov, "r");
-        
-        rafMov.seek(0);
-        int sizeOfMov = rafMov.readInt();
-        boolean estaEscrito = false, fechaCorrecta = false;
-        
         Date dInicio = jDateFechaInicio.getDate();
         Date dFinal = jDateFechaFin.getDate();
         
@@ -1078,6 +1072,8 @@ public class JFrameBanco extends javax.swing.JFrame {
         
         documento.addAuthor("Banco el cerdin");
         documento.addTitle("Reportes");
+        
+        boolean estaEscrito = false, fechaCorrecta = false;
         
         if(Integer.parseInt(fechaStringInicio.substring(6,10)) > Integer.parseInt(fechaStringFinal.substring(6, 10))){
             JOptionPane.showMessageDialog(this, "No hay un rango correcto de fechas(Año).");
@@ -1100,79 +1096,163 @@ public class JFrameBanco extends javax.swing.JFrame {
             return;
         }
         
-        try {
-            PdfWriter.getInstance(documento, new FileOutputStream("Reportes.pdf"));
-            documento.open();
-                    
-            for(int i =0; i<sizeOfMov; i++){
-                boolean movimientoImpreso = false;
-                
-                String envia = rafMov.readUTF();
-                String recibe = rafMov.readUTF();
-                String cantidad = rafMov.readUTF();
-                String fechaDocumento = rafMov.readUTF();
-                
-                String revisarDia = fechaDocumento.substring(0,2);
-                String revisarMes = fechaDocumento.substring(3,5);
-                String revisarAnio = fechaDocumento.substring(6,10);
-                
-                if(Integer.parseInt(fechaStringInicio.substring(6, 10)) < Integer.parseInt(revisarAnio) && Integer.parseInt(fechaStringFinal.substring(6,10)) > Integer.parseInt(revisarAnio)){
-                    estaEscrito = true;
-                    movimientoImpreso = true;
-                    documento.add(new Paragraph("Cuenta origen: "+envia));
-                    documento.add(Chunk.NEWLINE);
-                    documento.add(new Paragraph("Cuenta destino: "+recibe));
-                    documento.add(Chunk.NEWLINE);
-                    documento.add(new Paragraph("Cantidad depositada: "+cantidad));
-                    documento.add(Chunk.NEWLINE);
-                    documento.add(new Paragraph("Fecha del movimiento: "+fechaDocumento));
-                    documento.add(Chunk.NEWLINE);
-                    documento.add(Chunk.NEWLINE);
+        if(tipoMovimiento.equals("Depositos")){
+            fileMov = new File("Movimientos.obj");
+            rafMov = new RandomAccessFile(fileMov, "r");
+            try {
+                PdfWriter.getInstance(documento, new FileOutputStream("Reportes depositos.pdf"));
+                documento.open();
+
+                rafMov.seek(0);
+                int sizeOfMov = rafMov.readInt();
+
+                for(int i =0; i<sizeOfMov; i++){
+                    boolean movimientoImpreso = false;
+
+                    String envia = rafMov.readUTF();
+                    String recibe = rafMov.readUTF();
+                    String cantidad = rafMov.readUTF();
+                    String fechaDocumento = rafMov.readUTF();
+
+                    String revisarDia = fechaDocumento.substring(0,2);
+                    String revisarMes = fechaDocumento.substring(3,5);
+                    String revisarAnio = fechaDocumento.substring(6,10);
+
+                    if(Integer.parseInt(fechaStringInicio.substring(6, 10)) < Integer.parseInt(revisarAnio) && Integer.parseInt(fechaStringFinal.substring(6,10)) > Integer.parseInt(revisarAnio)){
+                        estaEscrito = true;
+                        movimientoImpreso = true;
+                        documento.add(new Paragraph("Cuenta origen: "+envia));
+                        documento.add(Chunk.NEWLINE);
+                        documento.add(new Paragraph("Cuenta destino: "+recibe));
+                        documento.add(Chunk.NEWLINE);
+                        documento.add(new Paragraph("Cantidad depositada: "+cantidad));
+                        documento.add(Chunk.NEWLINE);
+                        documento.add(new Paragraph("Fecha del movimiento: "+fechaDocumento));
+                        documento.add(Chunk.NEWLINE);
+                        documento.add(Chunk.NEWLINE);
+                    }
+                    int fechaInicioMes = Integer.parseInt(fechaStringInicio.substring(3, 5));
+                    int fechaFinalMes = Integer.parseInt(fechaStringFinal.substring(3, 5));
+                    int checkMes = Integer.parseInt(revisarMes);
+
+                    if(fechaInicioMes < checkMes &&  fechaFinalMes > checkMes && !movimientoImpreso){
+                        estaEscrito = true;
+                        movimientoImpreso = true;
+                        documento.add(new Paragraph("Cuenta origen: "+envia));
+                        documento.add(Chunk.NEWLINE);
+                        documento.add(new Paragraph("Cuenta destino: "+recibe));
+                        documento.add(Chunk.NEWLINE);
+                        documento.add(new Paragraph("Cantidad depositada: "+cantidad));
+                        documento.add(Chunk.NEWLINE);
+                        documento.add(new Paragraph("Fecha del movimiento: "+fechaDocumento));
+                        documento.add(Chunk.NEWLINE);
+                        documento.add(Chunk.NEWLINE);
+                    }
+
+                    int fechaInicioDia = Integer.parseInt(fechaStringInicio.substring(0, 2));
+                    int fechaFinalDia = Integer.parseInt(fechaStringFinal.substring(0, 2));
+                    int checkDia = Integer.parseInt(revisarDia);
+
+                    if(fechaInicioDia < checkDia && fechaFinalDia > checkDia && !movimientoImpreso){
+                        estaEscrito = true;
+                        documento.add(new Paragraph("Cuenta origen: "+envia));
+                        documento.add(Chunk.NEWLINE);
+                        documento.add(new Paragraph("Cuenta destino: "+recibe));
+                        documento.add(Chunk.NEWLINE);
+                        documento.add(new Paragraph("Cantidad depositada: "+cantidad));
+                        documento.add(Chunk.NEWLINE);
+                        documento.add(new Paragraph("Fecha del movimiento: "+fechaDocumento));
+                        documento.add(Chunk.NEWLINE);
+                        documento.add(Chunk.NEWLINE);
+                    }
                 }
-                int fechaInicioMes = Integer.parseInt(fechaStringInicio.substring(3, 5));
-                int fechaFinalMes = Integer.parseInt(fechaStringFinal.substring(3, 5));
-                int checkMes = Integer.parseInt(revisarMes);
-                
-                if(fechaInicioMes < checkMes &&  fechaFinalMes > checkMes && !movimientoImpreso){
-                    estaEscrito = true;
-                    movimientoImpreso = true;
-                    documento.add(new Paragraph("Cuenta origen: "+envia));
-                    documento.add(Chunk.NEWLINE);
-                    documento.add(new Paragraph("Cuenta destino: "+recibe));
-                    documento.add(Chunk.NEWLINE);
-                    documento.add(new Paragraph("Cantidad depositada: "+cantidad));
-                    documento.add(Chunk.NEWLINE);
-                    documento.add(new Paragraph("Fecha del movimiento: "+fechaDocumento));
-                    documento.add(Chunk.NEWLINE);
-                    documento.add(Chunk.NEWLINE);
+                if(!estaEscrito){
+                documento.add(new Paragraph("Ningun movimiento sucedio en esa fecha"));
                 }
-                
-                int fechaInicioDia = Integer.parseInt(fechaStringInicio.substring(0, 2));
-                int fechaFinalDia = Integer.parseInt(fechaStringFinal.substring(0, 2));
-                int checkDia = Integer.parseInt(revisarDia);
-                
-                if(fechaInicioDia < checkDia && fechaFinalDia > checkDia && !movimientoImpreso){
-                    estaEscrito = true;
-                    documento.add(new Paragraph("Cuenta origen: "+envia));
-                    documento.add(Chunk.NEWLINE);
-                    documento.add(new Paragraph("Cuenta destino: "+recibe));
-                    documento.add(Chunk.NEWLINE);
-                    documento.add(new Paragraph("Cantidad depositada: "+cantidad));
-                    documento.add(Chunk.NEWLINE);
-                    documento.add(new Paragraph("Fecha del movimiento: "+fechaDocumento));
-                    documento.add(Chunk.NEWLINE);
-                    documento.add(Chunk.NEWLINE);
-                }
+            } catch (DocumentException ex) {
+                System.out.println("Error al crear el PDF");
             }
-            if(!estaEscrito){
-            documento.add(new Paragraph("Ningun movimiento sucedio en esa fecha"));
+
+            rafMov.close();
+            documento.close();
+        }
+        else{
+            int sizeOfDe = 0;
+        
+            fileDe = new File("Depositos.obj");
+            rafDe = new RandomAccessFile(fileDe, "r");
+            
+            rafDe.seek(0);
+            sizeOfDe = rafDe.readInt();
+            
+            try {
+                PdfWriter.getInstance(documento, new FileOutputStream("Reportes transferencias.pdf"));
+                documento.open();
+
+                for(int i =0; i<sizeOfDe; i++){
+                    boolean movimientoImpreso = false;
+
+                    String aux = rafDe.readUTF();
+                    String cantidad = rafDe.readUTF();
+                    String fechaDocumento = rafDe.readUTF();
+
+                    String revisarDia = fechaDocumento.substring(0,2);
+                    String revisarMes = fechaDocumento.substring(3,5);
+                    String revisarAnio = fechaDocumento.substring(6,10);
+
+                    if(Integer.parseInt(fechaStringInicio.substring(6, 10)) < Integer.parseInt(revisarAnio) && Integer.parseInt(fechaStringFinal.substring(6,10)) > Integer.parseInt(revisarAnio)){
+                        estaEscrito = true;
+                        movimientoImpreso = true;
+                        documento.add(new Paragraph("Cuenta: "+aux));
+                        documento.add(Chunk.NEWLINE);
+                        documento.add(new Paragraph("Cantidad depositada: "+cantidad));
+                        documento.add(Chunk.NEWLINE);
+                        documento.add(new Paragraph("Fecha del movimiento: "+fechaDocumento));
+                        documento.add(Chunk.NEWLINE);
+                        documento.add(Chunk.NEWLINE);
+                    }
+                    int fechaInicioMes = Integer.parseInt(fechaStringInicio.substring(3, 5));
+                    int fechaFinalMes = Integer.parseInt(fechaStringFinal.substring(3, 5));
+                    int checkMes = Integer.parseInt(revisarMes);
+
+                    if(fechaInicioMes < checkMes &&  fechaFinalMes > checkMes && !movimientoImpreso){
+                        estaEscrito = true;
+                        movimientoImpreso = true;
+                        documento.add(new Paragraph("Cuenta: "+aux));
+                        documento.add(Chunk.NEWLINE);
+                        documento.add(new Paragraph("Cantidad depositada: "+cantidad));
+                        documento.add(Chunk.NEWLINE);
+                        documento.add(new Paragraph("Fecha del movimiento: "+fechaDocumento));
+                        documento.add(Chunk.NEWLINE);
+                        documento.add(Chunk.NEWLINE);
+                    }
+
+                    int fechaInicioDia = Integer.parseInt(fechaStringInicio.substring(0, 2));
+                    int fechaFinalDia = Integer.parseInt(fechaStringFinal.substring(0, 2));
+                    int checkDia = Integer.parseInt(revisarDia);
+
+                    if(fechaInicioDia < checkDia && fechaFinalDia > checkDia && !movimientoImpreso){
+                        estaEscrito = true;
+                        documento.add(new Paragraph("Cuenta: "+aux));
+                        documento.add(Chunk.NEWLINE);
+                        documento.add(new Paragraph("Cantidad depositada: "+cantidad));
+                        documento.add(Chunk.NEWLINE);
+                        documento.add(new Paragraph("Fecha del movimiento: "+fechaDocumento));
+                        documento.add(Chunk.NEWLINE);
+                        documento.add(Chunk.NEWLINE);
+                    }
+                }
+                if(!estaEscrito){
+                    documento.add(new Paragraph("Ningun movimiento sucedio en esa fecha"));
+                }
+            } catch (DocumentException ex) {
+                System.out.println("Error al crear el PDF");
             }
-        } catch (DocumentException ex) {
-            System.out.println("Error al crear el PDF");
+
+            rafDe.close();
+            documento.close();
         }
         
-        rafMov.close();
-        documento.close();
     }
    
 
@@ -1531,7 +1611,7 @@ public class JFrameBanco extends javax.swing.JFrame {
 
         jLabel19.setText("Tipo de cuenta:");
 
-        jComboCuentaRe.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Transferencias", "Depositos" }));
+        jComboCuentaRe.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Depositos", "Transferencias" }));
 
         jLabel20.setText("Fecha inicio:");
 
