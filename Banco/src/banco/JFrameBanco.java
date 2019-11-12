@@ -1129,10 +1129,30 @@ public class JFrameBanco extends javax.swing.JFrame {
                     documento.add(Chunk.NEWLINE);
                     documento.add(Chunk.NEWLINE);
                 }
+                int fechaInicioMes = Integer.parseInt(fechaStringInicio.substring(3, 5));
+                int fechaFinalMes = Integer.parseInt(fechaStringFinal.substring(3, 5));
+                int checkMes = Integer.parseInt(revisarMes);
                 
-                if(Integer.parseInt(fechaStringInicio.substring(3, 5)) < Integer.parseInt(revisarMes) && Integer.parseInt(fechaStringFinal.substring(3, 5)) > Integer.parseInt(revisarMes) && !movimientoImpreso){
+                if(fechaInicioMes < checkMes &&  fechaFinalMes > checkMes && !movimientoImpreso){
                     estaEscrito = true;
                     movimientoImpreso = true;
+                    documento.add(new Paragraph("Cuenta origen: "+envia));
+                    documento.add(Chunk.NEWLINE);
+                    documento.add(new Paragraph("Cuenta destino: "+recibe));
+                    documento.add(Chunk.NEWLINE);
+                    documento.add(new Paragraph("Cantidad depositada: "+cantidad));
+                    documento.add(Chunk.NEWLINE);
+                    documento.add(new Paragraph("Fecha del movimiento: "+fechaDocumento));
+                    documento.add(Chunk.NEWLINE);
+                    documento.add(Chunk.NEWLINE);
+                }
+                
+                int fechaInicioDia = Integer.parseInt(fechaStringInicio.substring(0, 2));
+                int fechaFinalDia = Integer.parseInt(fechaStringFinal.substring(0, 2));
+                int checkDia = Integer.parseInt(revisarDia);
+                
+                if(fechaInicioDia < checkDia && fechaFinalDia > checkDia && !movimientoImpreso){
+                    estaEscrito = true;
                     documento.add(new Paragraph("Cuenta origen: "+envia));
                     documento.add(Chunk.NEWLINE);
                     documento.add(new Paragraph("Cuenta destino: "+recibe));
@@ -1148,7 +1168,6 @@ public class JFrameBanco extends javax.swing.JFrame {
             documento.add(new Paragraph("Ningun movimiento sucedio en esa fecha"));
             }
         } catch (DocumentException ex) {
-            //documento.close();
             System.out.println("Error al crear el PDF");
         }
         
